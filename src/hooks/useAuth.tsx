@@ -25,6 +25,18 @@ const AuthContext = createContext<AuthContextType>({
   signOut: authSignOut,
 });
 
+async function fetchUserDoc(firebaseUser: FirebaseUser) {
+  try {
+    const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
+    const userDoc = snap.exists() ? (snap.data() as User) : null;
+    const role = userDoc?.role ?? 'student';
+    return { userDoc, role };
+  } catch (e) {
+    console.error('[auth] failed to fetch user doc:', e);
+    return { userDoc: null, role: 'student' };
+  }
+}
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [userDoc, setUserDoc] = useState<User | null>(null);
@@ -32,42 +44,50 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Kick off redirect-result processing immediately. We keep a reference to
-    // this promise so the auth-state handler can wait for it before committing
-    // state — preventing the brief null-user flash that causes AuthGuard to
-    // redirect to /login before Firebase has finished processing the redirect.
-    const redirectPromise = handleRedirectResult().catch((e) => {
-      console.error('[auth] redirect result error:', e);
-    });
+    let mounted = true;
+    let unsubscribeAuth: (() => void) | undefined;
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      // Always wait for redirect processing to settle first.
-      await redirectPromise;
-
-      if (firebaseUser) {
-        try {
-          const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
-          const fetchedUserDoc = snap.exists() ? (snap.data() as User) : null;
-          const fetchedRole = fetchedUserDoc?.role ?? 'student';
-          setUser(firebaseUser);
-          setUserDoc(fetchedUserDoc);
-          setRole(fetchedRole);
-        } catch (e) {
-          console.error('[auth] failed to fetch user doc:', e);
-          setUser(firebaseUser);
-          setUserDoc(null);
-          setRole('student');
-        }
-      } else {
-        setUser(null);
-        setUserDoc(null);
-        setRole(null);
+    const init = async () => {
+      // ── Phase 1: settle any in-flight redirect sign-in ──────────────────
+      // We MUST await this before starting onAuthStateChanged. If we start
+      // the listener first, it fires with null (pre-redirect state) and
+      // AuthGuard redirects to /login before Firebase has processed the
+      // OAuth callback.
+      try {
+        await handleRedirectResult();
+      } catch (e) {
+        console.error('[auth] redirect result error:', e);
       }
 
-      setLoading(false);
-    });
+      if (!mounted) return;
 
-    return () => unsubscribe();
+      // ── Phase 2: listen to ongoing auth state ───────────────────────────
+      // At this point the redirect is fully settled, so the first
+      // onAuthStateChanged emission reflects the true auth state.
+      unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!mounted) return;
+
+        if (firebaseUser) {
+          const { userDoc: fetchedDoc, role: fetchedRole } = await fetchUserDoc(firebaseUser);
+          if (!mounted) return;
+          setUser(firebaseUser);
+          setUserDoc(fetchedDoc);
+          setRole(fetchedRole);
+        } else {
+          setUser(null);
+          setUserDoc(null);
+          setRole(null);
+        }
+        setLoading(false);
+      });
+    };
+
+    init();
+
+    return () => {
+      mounted = false;
+      unsubscribeAuth?.();
+    };
   }, []);
 
   return (
