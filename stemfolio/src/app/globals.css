@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-hover: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(20px) saturate(180%);
+  --accent-blue: #007AFF;
+  --accent-green: #34C759;
+  --accent-red: #FF3B30;
+  --accent-yellow: #FFCC00;
+  --accent-purple: #AF52DE;
+  --accent-orange: #FF9500;
+  --radius-card: 20px;
+  --radius-button: 14px;
+  --radius-input: 12px;
+  --radius-pill: 999px;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 50%, #d5dce6 100%);
+  min-height: 100vh;
+}

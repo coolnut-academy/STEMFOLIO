@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.role == "admin";
+    }
+
+    function isProjectMember(projectId) {
+      return request.auth != null && request.auth.uid in
+        get(/databases/$(database)/documents/projects/$(projectId)).data.studentIds;
+    }
+
+    // --- Settings ---
+    match /settings/{document=**} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // --- Users ---
+    match /users/{userId} {
+      allow read: if request.auth != null &&
+        (isAdmin() || request.auth.uid == userId);
+      allow create: if request.auth != null;
+      allow update: if request.auth != null &&
+        (isAdmin() || (request.auth.uid == userId
+         && request.resource.data.role == resource.data.role));
+        // student แก้ข้อมูลตัวเองได้ แต่ห้ามเปลี่ยน role
+      allow delete: if isAdmin();
+    }
+
+    // --- Advisors ---
+    match /advisors/{advisorId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // --- Projects ---
+    match /projects/{projectId} {
+      allow read: if request.auth != null &&
+        (isAdmin() || request.auth.uid in resource.data.studentIds);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // --- Timeline Events ---
+    match /projects/{projectId}/timeline/{eventId} {
+      allow read: if request.auth != null &&
+        (isAdmin() || isProjectMember(projectId));
+
+      allow create: if request.auth != null &&
+        (isAdmin() ||
+         (isProjectMember(projectId)
+          && request.resource.data.type == "progress"
+          && request.resource.data.createdBy == request.auth.uid));
+
+      // Student แก้ไขได้เฉพาะโพสต์ตัวเอง + เฉพาะ field ที่อนุญาต
+      allow update: if request.auth != null &&
+        (isAdmin() ||
+         (isProjectMember(projectId)
+          && resource.data.createdBy == request.auth.uid
+          && resource.data.type == "progress"
+          && request.resource.data.type == "progress"));
+          // ป้องกัน student เปลี่ยน type เป็น result
+
+      allow delete: if isAdmin();
+    }
+
+    // --- Invite Codes ---
+    match /inviteCodes/{code} {
+      allow read: if request.auth != null;
+      allow create: if isAdmin();
+      allow update: if request.auth != null
+        && resource.data.usedCount < resource.data.maxUses;
+    }
+  }
+}
