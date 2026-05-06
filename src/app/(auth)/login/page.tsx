@@ -60,16 +60,17 @@ function LoginContent() {
     <div className="min-h-screen flex items-center justify-center p-4 page-transition">
       <GlassCard className="w-full max-w-md p-10 text-center">
         <div className="mb-10">
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-extrabold text-[var(--accent-blue)] dark:text-blue-400 mb-2 drop-shadow-sm">
             STEMFOLIO
           </h1>
-          <p className="text-gray-500 font-medium">เข้าสู่ระบบเพื่อจัดการโครงงานของคุณ</p>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">เข้าสู่ระบบเพื่อจัดการโครงงานของคุณ</p>
         </div>
 
         <Button 
           type="button" 
+          variant="outline"
           onClick={handleGoogleLogin} 
-          className="w-full h-14 text-lg font-semibold flex items-center justify-center gap-3 bg-white text-gray-800 border border-gray-200 hover:bg-gray-50 shadow-sm transition-all"
+          className="w-full h-14 text-lg font-semibold flex items-center justify-center gap-3 transition-all"
           loading={isLoading}
         >
           {!isLoading && (

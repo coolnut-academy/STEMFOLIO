@@ -35,22 +35,22 @@
 
 body {
   font-family: "Inter", system-ui, sans-serif;
-  background-color: #f8fafc;
+  background-color: #f0f4f8;
   background-image: 
-    radial-gradient(at 0% 0%, hsla(253,16%,7%,0.05) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, hsla(225,39%,30%,0.05) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, hsla(339,49%,30%,0.05) 0, transparent 50%);
+    radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(191, 90, 242, 0.15), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(48, 209, 88, 0.1), transparent 30%);
   background-attachment: fixed;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark body {
-  background-color: #121214;
+  background-color: #0d0d12;
   background-image: 
-    radial-gradient(at 0% 0%, hsla(253,50%,30%,0.1) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, hsla(225,50%,30%,0.1) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, hsla(339,50%,30%,0.1) 0, transparent 50%);
+    radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.2), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(191, 90, 242, 0.2), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(48, 209, 88, 0.15), transparent 30%);
   color: #f1f1f1;
 }
 
