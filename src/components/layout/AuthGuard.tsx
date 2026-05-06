@@ -51,9 +51,16 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
     );
   }
 
-  // If user is not present or doesn't have the right role, don't render children
-  // (The useEffect will handle redirection)
-  if (!user || !userDoc || userDoc.status !== 'approved' || (allowedRoles && role && !allowedRoles.includes(role as any))) {
+  const isProfileComplete = userDoc?.name && userDoc?.classRoom && userDoc?.studentId;
+
+  if (
+    !user || 
+    !userDoc || 
+    !isProfileComplete || 
+    userDoc.status === 'pending' || 
+    userDoc.status === 'rejected' || 
+    (allowedRoles && role && !allowedRoles.includes(role as any))
+  ) {
     return null;
   }
 
