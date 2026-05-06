@@ -7,7 +7,7 @@ import { Project } from '@/types';
 import { ProjectCard } from '@/components/ui/ProjectCard';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Plus, Folder } from 'lucide-react';
 import { getCategories } from '@/lib/firestore/settings';
@@ -99,8 +99,10 @@ export default function ProjectsPage() {
       </div>
 
       {loading ? (
-        <div className="py-20 flex justify-center">
-          <Spinner className="w-8 h-8 text-[var(--accent-blue)]" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({length: 8}).map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
         </div>
       ) : projects.length === 0 ? (
         <EmptyState 

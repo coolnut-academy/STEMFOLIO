@@ -16,7 +16,7 @@ import { useAdvisors } from '@/hooks/useAdvisors';
 import { useStudents } from '@/hooks/useStudents';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/Badge';
-import { X, Plus, Copy } from 'lucide-react';
+import { X, Plus, Copy, Globe, ExternalLink } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface ProjectFormProps {
@@ -145,10 +145,60 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
 
         <TextArea label="คำอธิบายสั้นๆ" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
         
-        <label className="flex items-center gap-2 mt-2 cursor-pointer">
-          <input type="checkbox" checked={formData.isPublic} onChange={e => setFormData({...formData, isPublic: e.target.checked})} className="rounded text-[var(--accent-blue)]" />
-          <span className="text-sm font-medium">เปิดเผยเป็นสาธารณะ (Portfolio Sharing)</span>
-        </label>
+        {/* Share Section */}
+        <div className="flex flex-col gap-4 mt-2 p-4 bg-gray-50 rounded-lg border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-gray-800 flex items-center gap-2">
+                <Globe className="w-4 h-4 text-blue-500" /> การเผยแพร่ผลงาน (Portfolio Preview)
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                เปิดสาธารณะเพื่อให้ผู้อื่นสามารถเข้าดู Portfolio ผ่านลิงก์ได้โดยไม่ต้องเข้าสู่ระบบ
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={formData.isPublic}
+                onChange={e => setFormData({ ...formData, isPublic: e.target.checked })}
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <span className="ml-3 text-sm font-medium text-gray-700">
+                {formData.isPublic ? 'สาธารณะ' : 'ส่วนตัว'}
+              </span>
+            </label>
+          </div>
+          
+          {initialData && formData.isPublic && (
+            <div className="flex gap-2 items-center mt-2">
+              <input 
+                type="text" 
+                readOnly 
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/project/${initialData.id}/preview`} 
+                className="flex-1 p-2 text-sm bg-white border border-gray-300 rounded-md outline-none text-gray-500"
+              />
+              <Button 
+                type="button" 
+                variant="secondary" 
+                className="whitespace-nowrap"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/project/${initialData.id}/preview`);
+                  showToast('คัดลอกลิงก์แล้ว', 'success');
+                }}
+              >
+                <Copy className="w-4 h-4 mr-2" /> คัดลอกลิงก์
+              </Button>
+              <Button 
+                type="button" 
+                variant="ghost"
+                onClick={() => window.open(`/project/${initialData.id}/preview`, '_blank')}
+              >
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
+        </div>
       </GlassCard>
 
       <GlassCard className="p-6 flex flex-col gap-4">

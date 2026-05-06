@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { listProjectsByStudent } from '@/lib/firestore/projects';
 import { Project } from '@/types';
 import { ProjectCard } from '@/components/ui/ProjectCard';
-import { Spinner } from '@/components/ui/Spinner';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function StudentDashboardPage() {
   const { user, userDoc } = useAuth();
@@ -44,8 +44,10 @@ export default function StudentDashboardPage() {
       </div>
 
       {loading ? (
-        <div className="py-20 flex justify-center">
-          <Spinner className="w-8 h-8 text-[var(--accent-blue)]" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({length: 4}).map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
         </div>
       ) : projects.length === 0 ? (
         <EmptyState 
