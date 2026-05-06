@@ -1,6 +1,5 @@
 import {
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   User as FirebaseUser,
@@ -9,25 +8,10 @@ import { auth, db } from './firebase';
 import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { User } from '@/types';
 
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = async (): Promise<FirebaseUser> => {
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
-  // Redirect avoids COOP cross-origin popup issues in Next.js
-  await signInWithRedirect(auth, provider);
-};
-
-/**
- * Processes the OAuth redirect result when the user returns from Google.
- * Creates a Firestore user document on first sign-in.
- * Returns the FirebaseUser if a redirect was just processed, or null otherwise.
- *
- * IMPORTANT: Call this and await it BEFORE starting onAuthStateChanged,
- * otherwise the listener fires with null (pre-redirect state) and guards
- * redirect to /login before the auth state is settled.
- */
-export const handleRedirectResult = async (): Promise<FirebaseUser | null> => {
-  const result = await getRedirectResult(auth);
-  if (!result) return null;
+  const result = await signInWithPopup(auth, provider);
 
   const user = result.user;
   const userDocRef = doc(db, 'users', user.uid);
