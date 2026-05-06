@@ -1,6 +1,6 @@
 import { db } from '../firebase';
 import { collection, query, where, getDocs, collectionGroup, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { TimelineEvent, Project } from '@/types';
+import { TimelineEvent, Project, User } from '@/types';
 
 export interface DashboardFilters {
   dateRange?: { start: Date; end: Date };
@@ -182,4 +182,10 @@ export const getPendingDeleteRequests = async (): Promise<{ event: TimelineEvent
     });
   }
   return result;
+};
+
+export const getPendingUsers = async (): Promise<User[]> => {
+  const q = query(collection(db, 'users'), where('status', '==', 'pending'));
+  const snap = await getDocs(q);
+  return snap.docs.map(doc => doc.data() as User);
 };

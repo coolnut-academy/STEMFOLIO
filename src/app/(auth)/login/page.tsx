@@ -1,28 +1,39 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
-import { Suspense } from 'react';
 
 function LoginContent() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { signIn, user, role } = useAuth();
+  const { signInWithGoogle, user, userDoc, role } = useAuth();
   const { showToast } = useToast();
 
   useEffect(() => {
-    // Already logged in
-    if (user && role) {
+    if (user && userDoc) {
+      // Check if profile is complete
+      const isProfileComplete = userDoc.name && userDoc.classRoom && userDoc.studentId;
+      
+      if (!isProfileComplete) {
+        router.push('/complete-profile');
+        return;
+      }
+
+      if (userDoc.status === 'pending') {
+        router.push('/pending-approval');
+        return;
+      }
+
+      if (userDoc.status === 'rejected') {
+        router.push('/rejected');
+        return;
+      }
+
       const redirect = searchParams?.get('redirect');
       if (redirect) {
         router.push(redirect);
@@ -30,74 +41,49 @@ function LoginContent() {
         router.push(role === 'admin' ? '/admin' : '/student');
       }
     }
-  }, [user, role, router, searchParams]);
+  }, [user, userDoc, role, router, searchParams]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      showToast('กรุณากรอกอีเมลและรหัสผ่าน', 'error');
-      return;
-    }
-
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      await signIn(email, password);
-      // Let the useEffect handle the redirect based on role
+      await signInWithGoogle();
+      // Let the useEffect handle the redirect
     } catch (error: any) {
       console.error(error);
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        showToast('อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
-      } else {
-        showToast('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error');
-      }
+      showToast('เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google', 'error');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <GlassCard className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-[var(--accent-blue)] to-[var(--accent-purple)] bg-clip-text text-transparent">
+    <div className="min-h-screen flex items-center justify-center p-4 page-transition">
+      <GlassCard className="w-full max-w-md p-10 text-center">
+        <div className="mb-10">
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             STEMFOLIO
           </h1>
-          <p className="text-gray-500 mt-2">เข้าสู่ระบบเพื่อจัดการโครงงานของคุณ</p>
+          <p className="text-gray-500 font-medium">เข้าสู่ระบบเพื่อจัดการโครงงานของคุณ</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <Input 
-            label="อีเมล" 
-            type="email" 
-            placeholder="example@school.ac.th"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-          />
-          <Input 
-            label="รหัสผ่าน" 
-            type="password" 
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-          />
-          
-          <Button 
-            type="submit" 
-            className="w-full mt-2" 
-            loading={isLoading}
-          >
-            เข้าสู่ระบบ
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          นักเรียนที่ต้องการเข้าร่วมโครงงานใหม่?{' '}
-          <Link href="/join" className="text-[var(--accent-blue)] font-medium hover:underline">
-            ใช้ Invite Code ที่นี่
-          </Link>
-        </div>
+        <Button 
+          type="button" 
+          onClick={handleGoogleLogin} 
+          className="w-full h-14 text-lg font-semibold flex items-center justify-center gap-3 bg-white text-gray-800 border border-gray-200 hover:bg-gray-50 shadow-sm transition-all"
+          loading={isLoading}
+        >
+          {!isLoading && (
+            <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+              <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
+                <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
+                <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
+                <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/>
+                <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/>
+              </g>
+            </svg>
+          )}
+          เข้าสู่ระบบด้วย Gmail
+        </Button>
       </GlassCard>
     </div>
   );

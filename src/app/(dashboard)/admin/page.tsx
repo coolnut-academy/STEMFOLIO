@@ -11,6 +11,7 @@ import { CategoryPieChart } from '@/components/features/Dashboard/CategoryPieCha
 import { DeadlineTracker } from '@/components/features/Dashboard/DeadlineTracker';
 import { ActivityFeed } from '@/components/features/Dashboard/ActivityFeed';
 import { DeleteRequestQueue } from '@/components/features/Dashboard/DeleteRequestQueue';
+import { PendingUserQueue } from '@/components/features/Dashboard/PendingUserQueue';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Folder, Send, Clock, Trophy, AlertTriangle, Trash2 } from 'lucide-react';
 
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
     deadlines, 
     activity, 
     deleteRequests, 
+    pendingUsers,
     loading, 
     refresh 
   } = useDashboardStats(filters);
@@ -51,6 +53,10 @@ export default function AdminDashboard() {
         </div>
       ) : (
         <>
+          {pendingUsers && pendingUsers.length > 0 && (
+            <PendingUserQueue users={pendingUsers} onRefresh={refresh} />
+          )}
+
           {deleteRequests.length > 0 && (
             <DeleteRequestQueue requests={deleteRequests} onRefresh={refresh} />
           )}

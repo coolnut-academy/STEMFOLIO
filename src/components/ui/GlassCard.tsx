@@ -13,7 +13,8 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({ children,
         bg-[var(--glass-bg)] backdrop-blur-[20px] backdrop-saturate-[180%]
         border border-[var(--glass-border)] rounded-[var(--radius-card)]
         shadow-[var(--glass-shadow)] transition-all duration-300
-        ${hoverEffect ? 'hover:bg-[var(--glass-bg-hover)] hover:shadow-lg' : ''}
+        dark:bg-[var(--glass-bg)] dark:border-white/10 dark:shadow-black/50
+        ${hoverEffect ? 'hover:bg-[var(--glass-bg-hover)] hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-black/70' : ''}
         ${className}
       `}
       {...props}

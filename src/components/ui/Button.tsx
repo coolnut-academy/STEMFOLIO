@@ -13,10 +13,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseClasses = `inline-flex items-center justify-center font-medium rounded-[var(--radius-button)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed`;
     
     const variantClasses = {
-      primary: `bg-[var(--accent-blue)] text-white hover:bg-blue-600 focus:ring-blue-500 shadow-md`,
-      secondary: `bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-gray-800 hover:bg-[var(--glass-bg-hover)] focus:ring-gray-300 shadow-sm`,
-      danger: `bg-[var(--accent-red)] text-white hover:bg-red-600 focus:ring-red-500 shadow-md`,
-      ghost: `bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-300`,
+      primary: `bg-[var(--accent-blue)] text-white hover:bg-blue-600 focus:ring-blue-500 shadow-md dark:shadow-blue-900/50`,
+      secondary: `bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-gray-800 dark:text-gray-200 hover:bg-[var(--glass-bg-hover)] focus:ring-gray-300 dark:focus:ring-gray-700 shadow-sm`,
+      danger: `bg-[var(--accent-red)] text-white hover:bg-red-600 focus:ring-red-500 shadow-md dark:shadow-red-900/50`,
+      ghost: `bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 focus:ring-gray-300 dark:focus:ring-gray-700`,
     };
     
     const sizeClasses = {

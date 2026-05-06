@@ -11,7 +11,7 @@ interface AuthGuardProps {
 }
 
 export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
-  const { user, role, loading } = useAuth();
+  const { user, userDoc, role, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -20,12 +20,21 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
       if (!user) {
         // Not logged in -> redirect to login, save return url if needed
         router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
-      } else if (allowedRoles && role && !allowedRoles.includes(role as any)) {
-        // Logged in but wrong role -> redirect to their home dashboard
-        if (role === 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/student');
+      } else if (userDoc) {
+        const isProfileComplete = userDoc.name && userDoc.classRoom && userDoc.studentId;
+        if (!isProfileComplete) {
+          router.push('/complete-profile');
+        } else if (userDoc.status === 'pending') {
+          router.push('/pending-approval');
+        } else if (userDoc.status === 'rejected') {
+          router.push('/rejected');
+        } else if (allowedRoles && role && !allowedRoles.includes(role as any)) {
+          // Logged in but wrong role -> redirect to their home dashboard
+          if (role === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/student');
+          }
         }
       }
     }
@@ -44,7 +53,7 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
 
   // If user is not present or doesn't have the right role, don't render children
   // (The useEffect will handle redirection)
-  if (!user || (allowedRoles && role && !allowedRoles.includes(role as any))) {
+  if (!user || !userDoc || userDoc.status !== 'approved' || (allowedRoles && role && !allowedRoles.includes(role as any))) {
     return null;
   }
 

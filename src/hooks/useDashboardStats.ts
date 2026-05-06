@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
   getStats, getEventsByMonth, getResultDistribution, getCategoryDistribution, 
-  getUpcomingDeadlines, getRecentActivity, getPendingDeleteRequests,
+  getUpcomingDeadlines, getRecentActivity, getPendingDeleteRequests, getPendingUsers,
   DashboardFilters, DashboardStats 
 } from '@/lib/firestore/dashboard';
-import { TimelineEvent, Project } from '@/types';
+import { TimelineEvent, Project, User } from '@/types';
 
 export const useDashboardStats = (filters?: DashboardFilters) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -16,6 +16,7 @@ export const useDashboardStats = (filters?: DashboardFilters) => {
   const [deadlines, setDeadlines] = useState<{event: TimelineEvent, projectTitle: string, projectId: string}[]>([]);
   const [activity, setActivity] = useState<{event: TimelineEvent, projectId: string}[]>([]);
   const [deleteRequests, setDeleteRequests] = useState<{ event: TimelineEvent, project: Project }[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
@@ -36,7 +37,8 @@ export const useDashboardStats = (filters?: DashboardFilters) => {
         getCategoryDistribution(),
         getUpcomingDeadlines(),
         getRecentActivity(20),
-        getPendingDeleteRequests()
+        getPendingDeleteRequests(),
+        getPendingUsers()
       ]);
 
       setStats(statsData);
@@ -46,6 +48,7 @@ export const useDashboardStats = (filters?: DashboardFilters) => {
       setDeadlines(dlData);
       setActivity(actData);
       setDeleteRequests(delData);
+      setPendingUsers(pendData);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -65,6 +68,7 @@ export const useDashboardStats = (filters?: DashboardFilters) => {
     deadlines, 
     activity, 
     deleteRequests, 
+    pendingUsers,
     loading, 
     refresh: fetchAll 
   };

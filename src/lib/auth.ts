@@ -1,39 +1,52 @@
 import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   User as FirebaseUser,
   getIdTokenResult
 } from 'firebase/auth';
 import { auth, db } from './firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { User } from '@/types';
 
-export const signInWithEmail = async (email: string, password: string) => {
-  const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  return userCredential.user;
-};
-
-export const signUpWithEmail = async (email: string, password: string, name: string, nickname?: string) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+export const signInWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  });
+  
+  const userCredential = await signInWithPopup(auth, provider);
   const user = userCredential.user;
 
-  // Create user doc in Firestore
+  // Check if user doc exists
   const userDocRef = doc(db, 'users', user.uid);
-  const userData: Partial<User> = {
-    id: user.uid,
-    email: user.email!,
-    name,
-    nickname: nickname || '',
-    role: 'student', // Default role is student
-    projectIds: [],
-    createdAt: serverTimestamp() as any,
-    updatedAt: serverTimestamp() as any,
-  };
-  await setDoc(userDocRef, userData);
+  const userDocSnap = await getDoc(userDocRef);
+
+  if (!userDocSnap.exists()) {
+    // Create incomplete user doc
+    const userData: Partial<User> = {
+      id: user.uid,
+      email: user.email || '',
+      name: user.displayName || '',
+      role: 'student',
+      status: 'pending',
+      projectIds: [],
+      createdAt: serverTimestamp() as any,
+      updatedAt: serverTimestamp() as any,
+    };
+    await setDoc(userDocRef, userData);
+  }
 
   return user;
+};
+
+export const updateProfile = async (uid: string, data: Partial<User>) => {
+  const userDocRef = doc(db, 'users', uid);
+  await updateDoc(userDocRef, {
+    ...data,
+    updatedAt: serverTimestamp()
+  });
 };
 
 export const signOut = async () => {

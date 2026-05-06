@@ -10,6 +10,9 @@ export interface User {
   studentId?: string;
   classRoom?: string;
   phone?: string;
+  competitionEmail?: string;
+  competitionPhone?: string;
+  status?: 'pending' | 'approved' | 'rejected';
   projectIds: string[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
