@@ -14,7 +14,7 @@ export const uploadImage = async (
   const storageRef = ref(storage, filePath);
 
   return new Promise((resolve, reject) => {
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const uploadTask = uploadBytesResumable(storageRef, file, { contentType: 'image/jpeg' });
 
     uploadTask.on(
       'state_changed',

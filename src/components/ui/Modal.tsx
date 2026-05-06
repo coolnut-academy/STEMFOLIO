@@ -23,29 +23,26 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-md' 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"
+        className="absolute inset-0 bg-[rgba(3,4,14,0.70)] backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Panel */}
       <div className={`
         relative w-full ${maxWidth}
-        bg-white/92 dark:bg-[rgba(8,12,30,0.92)]
-        backdrop-blur-[48px] backdrop-saturate-[180%]
-        border border-slate-200/80 dark:border-white/10
+        bg-[rgba(12,15,38,0.96)] backdrop-blur-[48px]
+        border border-[rgba(255,255,255,0.10)]
         rounded-[var(--radius-card)]
-        shadow-[0_20px_60px_rgba(0,66,180,0.14),0_4px_12px_rgba(0,0,0,0.06)]
-        dark:shadow-[0_20px_60px_rgba(0,0,0,0.50)]
-        animate-in fade-in zoom-in-95 duration-200
+        shadow-[0_24px_72px_rgba(0,0,0,0.60)]
         overflow-hidden
       `}>
         {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/40 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[rgba(99,102,241,0.40)] to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/6">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.07)]">
           {title && (
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+            <h3 className="text-sm font-semibold text-white/88 tracking-wide">
               {title}
             </h3>
           )}
@@ -53,7 +50,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-md' 
             type="button"
             onClick={onClose}
             aria-label="ปิด"
-            className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-white/8 transition-all"
+            className="ml-auto p-1.5 rounded-lg text-white/40 hover:text-white/75 hover:bg-[rgba(255,255,255,0.07)] transition-all"
           >
             <X className="w-4 h-4" />
           </button>

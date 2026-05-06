@@ -2,7 +2,6 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { Spinner } from '@/components/ui/Spinner';
@@ -30,29 +29,45 @@ export default function RejectedPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center"><Spinner className="w-8 h-8 text-blue-500" /></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="cyber-spinner w-8 h-8" />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 page-transition">
-      <GlassCard className="w-full max-w-md p-10 text-center flex flex-col items-center">
-        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
-          <XCircle className="w-10 h-10 text-red-500" />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden page-transition">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="login-blob-2" />
+        <div className="login-blob-3" />
+      </div>
+      <div className="star-field" />
+
+      <div className="relative z-10 w-full max-w-md
+        bg-[rgba(255,255,255,0.065)] backdrop-blur-[40px]
+        border border-[rgba(255,255,255,0.10)]
+        rounded-[var(--radius-card)]
+        shadow-[0_24px_72px_rgba(0,0,0,0.55)]
+        p-10 text-center flex flex-col items-center">
+
+        <div className="w-16 h-16 rounded-2xl
+          bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.25)]
+          flex items-center justify-center mb-6
+          shadow-[0_4px_20px_rgba(239,68,68,0.18)]">
+          <XCircle className="w-8 h-8 text-[#fca5a5]" />
         </div>
-        
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">ไม่อนุมัติการใช้งาน</h1>
-        <p className="text-gray-500 mb-8">
-          ข้อมูลของคุณไม่ได้รับการอนุมัติจากผู้ดูแลระบบ<br/>กรุณาติดต่อครูที่ปรึกษาหรือผู้ดูแลระบบ
+
+        <h1 className="text-xl font-bold text-white mb-2">ไม่อนุมัติการใช้งาน</h1>
+        <p className="text-white/70 mb-8 text-sm leading-relaxed">
+          ข้อมูลของคุณไม่ได้รับการอนุมัติจากผู้ดูแลระบบ<br/>
+          กรุณาติดต่อครูที่ปรึกษาหรือผู้ดูแลระบบ
         </p>
 
-        <Button 
-          variant="secondary" 
-          className="w-full"
-          onClick={handleSignOut}
-        >
-          ลงชื่อออก
+        <Button variant="outline" className="w-full" onClick={handleSignOut}>
+          ออกจากระบบ
         </Button>
-      </GlassCard>
+      </div>
     </div>
   );
 }

@@ -13,36 +13,42 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const base = `
       inline-flex items-center justify-center font-semibold
       rounded-[var(--radius-button)] transition-all duration-200
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(0,102,255,0.45)] focus-visible:ring-offset-2
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(99,102,241,0.50)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060918]
       disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none
       active:scale-[0.97] select-none
     `;
 
     const variants = {
       primary: `
-        bg-[#0066FF] text-white border border-[#0066FF]
-        hover:bg-[#0052CC] hover:shadow-[var(--glow-blue)] hover:scale-[1.02]
+        bg-gradient-to-r from-[#6366f1] via-[#8b5cf6] to-[#a855f7]
+        text-white border border-[rgba(99,102,241,0.30)]
+        shadow-[0_10px_30px_rgba(99,102,241,0.28)]
+        hover:brightness-110 hover:shadow-[0_12px_36px_rgba(99,102,241,0.38)]
+        hover:scale-[1.02]
       `,
       secondary: `
-        bg-white border border-[rgba(0,102,255,0.22)] text-[#0066FF]
-        hover:bg-blue-50 hover:border-[rgba(0,102,255,0.45)]
-        hover:shadow-[0_0_18px_rgba(0,102,255,0.18)]
-        dark:bg-white/8 dark:text-[#4D9FFF] dark:border-[rgba(77,159,255,0.25)]
+        bg-[rgba(255,255,255,0.07)] text-white/85
+        border border-[rgba(255,255,255,0.12)]
+        backdrop-blur-[8px]
+        hover:bg-[rgba(255,255,255,0.11)] hover:border-[rgba(255,255,255,0.18)]
+        hover:text-white
       `,
       danger: `
-        bg-white border border-rose-200 text-rose-600
-        hover:bg-rose-50 hover:border-rose-300
-        hover:shadow-[0_0_15px_rgba(225,29,72,0.18)]
+        bg-[rgba(239,68,68,0.12)] text-[#f87171]
+        border border-[rgba(239,68,68,0.25)]
+        hover:bg-[rgba(239,68,68,0.18)] hover:border-[rgba(239,68,68,0.40)]
+        hover:shadow-[0_0_16px_rgba(239,68,68,0.22)]
       `,
       ghost: `
-        bg-transparent border border-transparent text-slate-500
-        hover:text-slate-700 hover:bg-slate-100
-        dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/8
+        bg-transparent border border-transparent
+        text-white/60
+        hover:text-white/90 hover:bg-[rgba(255,255,255,0.05)]
       `,
       outline: `
-        bg-white border border-slate-200 text-slate-700
-        hover:border-slate-300 hover:bg-slate-50
-        dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/10
+        bg-transparent text-white/70
+        border border-[rgba(255,255,255,0.12)]
+        hover:border-[rgba(99,102,241,0.40)] hover:text-white
+        hover:bg-[rgba(99,102,241,0.08)]
       `,
     };
 

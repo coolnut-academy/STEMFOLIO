@@ -11,27 +11,27 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="flex flex-col gap-1.5 w-full">
         {label && (
-          <label className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
+          <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/65">
             {label}
           </label>
         )}
         <select
           ref={ref}
           className={`
-            w-full px-4 py-2.5 text-sm
-            bg-white/80 dark:bg-white/5
-            border ${error ? 'border-rose-300' : 'border-slate-200 dark:border-white/10'}
+            w-full px-3 py-2.5 text-sm
+            bg-[var(--input-bg)]
+            border ${error ? 'border-[rgba(239,68,68,0.45)]' : 'border-[var(--input-border)]'}
             rounded-[var(--radius-input)]
-            text-slate-900 dark:text-slate-100
+            text-white/85
             appearance-none cursor-pointer
+            backdrop-blur-[8px]
             transition-all duration-200
             focus:outline-none
-            focus:border-[#0066FF] dark:focus:border-[#4D9FFF]
-            focus:bg-white dark:focus:bg-white/8
-            focus:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]
+            focus:border-[rgba(99,102,241,0.55)]
+            focus:bg-[rgba(255,255,255,0.08)]
+            focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]
             disabled:opacity-40 disabled:cursor-not-allowed
-            [&>option]:bg-white [&>option]:text-slate-900
-            dark:[&>option]:bg-[#0e1428] dark:[&>option]:text-slate-100
+            [&>option]:bg-[#0e1228] [&>option]:text-white/85
             ${className}
           `}
           {...props}
@@ -41,7 +41,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ))}
         </select>
         {error && (
-          <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">{error}</span>
+          <span className="text-[11px] font-medium text-[#f87171]">{error}</span>
         )}
       </div>
     );

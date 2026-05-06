@@ -77,15 +77,19 @@ export const PostComposer = ({ projectId, onSuccess }: PostComposerProps) => {
       disabled={isSubmitting}
       onClick={() => setActiveTab(activeTab === tab ? null : tab)}
       className={`
-        flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all
+        flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all
         ${activeTab === tab || count > 0
-          ? 'bg-blue-50 dark:bg-[rgba(0,102,255,0.12)] border border-blue-200 dark:border-[rgba(0,102,255,0.35)] text-[#0066FF] dark:text-[#4D9FFF]'
-          : 'border border-slate-200 dark:border-[rgba(255,255,255,0.06)] text-slate-400 dark:text-white/35 hover:text-slate-600 dark:hover:text-white/60 hover:border-slate-300 dark:hover:border-[rgba(255,255,255,0.12)]'}
+          ? 'bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.35)] text-[#c7d2fe]'
+          : 'border border-[rgba(255,255,255,0.08)] text-white/50 hover:text-white/80 hover:border-[rgba(255,255,255,0.14)] hover:bg-[rgba(255,255,255,0.04)]'}
       `}
     >
       <Icon className="w-3.5 h-3.5" />
       <span className="hidden sm:inline">{label}</span>
-      {count > 0 && <span className="bg-[#0066FF] text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold">{count}</span>}
+      {count > 0 && (
+        <span className="bg-[#6366f1] text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold">
+          {count}
+        </span>
+      )}
     </button>
   );
 
@@ -96,20 +100,19 @@ export const PostComposer = ({ projectId, onSuccess }: PostComposerProps) => {
         onClick={() => setExpanded(true)}
         className="
           w-full flex items-center gap-3 px-5 py-3.5 text-left
-          bg-white/85 dark:bg-[rgba(8,12,30,0.80)]
+          bg-[rgba(255,255,255,0.03)]
           backdrop-blur-[20px]
-          border border-slate-200/70 dark:border-white/8
+          border border-[rgba(255,255,255,0.07)]
           rounded-[var(--radius-card)]
-          hover:border-blue-200 dark:hover:border-[rgba(0,102,255,0.38)]
-          hover:bg-blue-50/50 dark:hover:bg-[rgba(0,102,255,0.04)]
-          hover:shadow-[0_4px_16px_rgba(0,66,180,0.08)]
+          hover:border-[rgba(99,102,241,0.30)]
+          hover:bg-[rgba(99,102,241,0.05)]
           transition-all duration-200 group
         "
       >
-        <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-[rgba(0,102,255,0.10)] border border-blue-200 dark:border-[rgba(0,102,255,0.25)] flex items-center justify-center group-hover:shadow-[0_0_10px_rgba(0,102,255,0.15)] transition-shadow">
-          <Zap className="w-4 h-4 text-[#0066FF]" />
+        <div className="w-8 h-8 rounded-lg bg-[rgba(99,102,241,0.12)] border border-[rgba(99,102,241,0.22)] flex items-center justify-center group-hover:shadow-[0_0_10px_rgba(99,102,241,0.20)] transition-shadow shrink-0">
+          <Zap className="w-4 h-4 text-[#818cf8]" />
         </div>
-        <span className="text-sm text-slate-400 dark:text-white/28 group-hover:text-slate-600 dark:group-hover:text-white/50 transition-colors">
+        <span className="text-sm text-white/40 group-hover:text-white/60 transition-colors">
           เขียนความคืบหน้า หรืออัปเดตผลงาน...
         </span>
       </button>
@@ -119,16 +122,14 @@ export const PostComposer = ({ projectId, onSuccess }: PostComposerProps) => {
   return (
     <div className="
       relative
-      bg-white/88 dark:bg-[rgba(8,12,30,0.85)]
+      bg-[rgba(8,12,30,0.85)]
       backdrop-blur-[20px]
-      border border-blue-200/70 dark:border-[rgba(0,102,255,0.20)]
+      border border-[rgba(99,102,241,0.18)]
       rounded-[var(--radius-card)]
-      shadow-[0_4px_24px_rgba(0,66,180,0.08)]
-      dark:shadow-[0_4px_24px_rgba(0,0,0,0.25)]
+      shadow-[0_4px_24px_rgba(0,0,0,0.30)]
       p-4 md:p-5 flex flex-col gap-4
     ">
-      {/* Top accent */}
-      <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
+      <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-[rgba(99,102,241,0.40)] to-transparent" />
 
       <Input
         placeholder="หัวข้อการอัปเดต *"
@@ -146,12 +147,11 @@ export const PostComposer = ({ projectId, onSuccess }: PostComposerProps) => {
         rows={3}
       />
 
-      {/* Attachment panels */}
       {activeTab === 'image' && (
-        <div className="p-4 bg-blue-50/50 dark:bg-[rgba(0,102,255,0.03)] rounded-xl border border-blue-100 dark:border-[rgba(0,102,255,0.12)]">
+        <div className="p-4 bg-[rgba(99,102,241,0.04)] rounded-xl border border-[rgba(99,102,241,0.12)]">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-blue-400 dark:text-[rgba(0,102,255,0.65)]">อัปโหลดรูปภาพ</span>
-            <button type="button" onClick={() => setActiveTab(null)} className="text-[10px] font-mono text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/60 transition-colors">ปิด ×</button>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#818cf8]/70">อัปโหลดรูปภาพ</span>
+            <button type="button" onClick={() => setActiveTab(null)} className="text-[10px] font-medium text-white/38 hover:text-white/65 transition-colors">ปิด ×</button>
           </div>
           <ImageUploader
             files={imageUpload.files}
@@ -166,27 +166,26 @@ export const PostComposer = ({ projectId, onSuccess }: PostComposerProps) => {
       )}
 
       {activeTab === 'link' && (
-        <div className="p-4 bg-blue-50/50 dark:bg-[rgba(0,102,255,0.03)] rounded-xl border border-blue-100 dark:border-[rgba(0,102,255,0.12)]">
+        <div className="p-4 bg-[rgba(99,102,241,0.04)] rounded-xl border border-[rgba(99,102,241,0.12)]">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-blue-400 dark:text-[rgba(0,102,255,0.65)]">แนบลิงก์</span>
-            <button type="button" onClick={() => setActiveTab(null)} className="text-[10px] font-mono text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/60 transition-colors">ปิด ×</button>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#818cf8]/70">แนบลิงก์</span>
+            <button type="button" onClick={() => setActiveTab(null)} className="text-[10px] font-medium text-white/38 hover:text-white/65 transition-colors">ปิด ×</button>
           </div>
           <LinkAttachment type="link" links={links} onAddLink={l => setLinks([...links, l])} onRemoveLink={i => setLinks(links.filter((_, j) => j !== i))} />
         </div>
       )}
 
       {activeTab === 'video' && (
-        <div className="p-4 bg-blue-50/50 dark:bg-[rgba(0,102,255,0.03)] rounded-xl border border-blue-100 dark:border-[rgba(0,102,255,0.12)]">
+        <div className="p-4 bg-[rgba(99,102,241,0.04)] rounded-xl border border-[rgba(99,102,241,0.12)]">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-blue-400 dark:text-[rgba(0,102,255,0.65)]">แนบวิดีโอ</span>
-            <button type="button" onClick={() => setActiveTab(null)} className="text-[10px] font-mono text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/60 transition-colors">ปิด ×</button>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#818cf8]/70">แนบวิดีโอ</span>
+            <button type="button" onClick={() => setActiveTab(null)} className="text-[10px] font-medium text-white/38 hover:text-white/65 transition-colors">ปิด ×</button>
           </div>
           <LinkAttachment type="video" links={videos} onAddLink={l => setVideos([...videos, l])} onRemoveLink={i => setVideos(videos.filter((_, j) => j !== i))} />
         </div>
       )}
 
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-white/6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[rgba(255,255,255,0.06)]">
         <div className="flex gap-2">
           {tabBtn('image', ImageIcon, 'รูปภาพ', imageUpload.files.length)}
           {tabBtn('link',  Link2,    'ลิงก์',   links.length)}

@@ -82,13 +82,12 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
   return (
     <div className={`
       relative overflow-hidden
-      bg-white/85 dark:bg-[rgba(8,12,30,0.80)]
-      backdrop-blur-[20px]
-      border border-slate-200/70 dark:border-white/8 border-l-[3px] ${accent.border}
+      bg-[var(--glass-bg)] backdrop-blur-[24px]
+      border border-[rgba(255,255,255,0.08)] border-l-[3px] ${accent.border}
       rounded-[var(--radius-card)] ${accent.glow}
       transition-all duration-300
-      hover:border-slate-300/80 dark:hover:border-white/14 hover:border-l-[3px]
-      hover:shadow-[0_6px_24px_rgba(0,66,180,0.09)]
+      hover:bg-[var(--glass-bg-hover)] hover:border-[rgba(99,102,241,0.20)] hover:border-l-[3px]
+      hover:shadow-[0_8px_32px_rgba(0,0,0,0.40)]
       p-4 md:p-5 flex flex-col gap-3
     `}>
       {/* Pending delete badge */}
@@ -104,7 +103,7 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
           <Badge variant={accentMap[event.type]?.badge || 'gray'}>
             {labelMap[event.type]}
           </Badge>
-          <span className="text-[11px] font-mono text-slate-400 dark:text-white/28">
+          <span className="text-[11px] font-mono text-white/52">
             {event.createdAt
               ? formatDistanceToNow(event.createdAt.toDate(), { addSuffix: true, locale: th })
               : '...'}
@@ -136,16 +135,16 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
 
       {/* Content */}
       <div>
-        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base leading-snug">{event.title}</h3>
+        <h3 className="font-bold text-white/90 text-base leading-snug">{event.title}</h3>
         {event.description && (
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 whitespace-pre-wrap leading-relaxed">{event.description}</p>
+          <p className="text-white/65 text-sm mt-1.5 whitespace-pre-wrap leading-relaxed">{event.description}</p>
         )}
       </div>
 
       {/* Submission details */}
       {event.type === 'submission' && (
-        <div className="mt-1 p-3 bg-violet-50 dark:bg-[rgba(168,85,247,0.06)] rounded-xl border border-violet-200 dark:border-[rgba(168,85,247,0.18)] text-sm">
-          <span className="font-semibold text-violet-700 dark:text-violet-400">เวที: {event.competitionName}</span>
+        <div className="mt-1 p-3 bg-[rgba(168,85,247,0.07)] rounded-xl border border-[rgba(168,85,247,0.20)] text-sm">
+          <span className="font-semibold text-[#d8b4fe]">เวที: {event.competitionName}</span>
           <div className="flex items-center gap-2 mt-2">
             <Badge variant="gray" className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
@@ -162,12 +161,12 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
       {event.type === 'result' && (
         <div className={`mt-1 p-3 rounded-xl border text-sm ${
           event.result === 'pass' || event.result === 'award'
-            ? 'bg-emerald-50 dark:bg-[rgba(0,255,136,0.05)] border-emerald-200 dark:border-[rgba(0,255,136,0.20)]'
+            ? 'bg-[rgba(16,185,129,0.08)] border-[rgba(16,185,129,0.22)]'
             : event.result === 'fail'
-            ? 'bg-rose-50 dark:bg-[rgba(255,0,110,0.05)] border-rose-200 dark:border-[rgba(255,0,110,0.20)]'
-            : 'bg-amber-50 dark:bg-[rgba(255,230,0,0.05)] border-amber-200 dark:border-[rgba(255,230,0,0.20)]'
+            ? 'bg-[rgba(239,68,68,0.08)] border-[rgba(239,68,68,0.22)]'
+            : 'bg-[rgba(245,158,11,0.08)] border-[rgba(245,158,11,0.22)]'
         }`}>
-          <span className="font-semibold text-slate-700 dark:text-slate-300">เวที: {event.competitionName || 'ไม่ระบุ'}</span>
+          <span className="font-semibold text-white/80">เวที: {event.competitionName || 'ไม่ระบุ'}</span>
           <div className="flex items-center gap-2 mt-2">
             <Badge variant={
               event.result === 'pass'  ? 'green'  :
@@ -180,7 +179,7 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
             </Badge>
             {event.announcementUrl && (
               <a href={event.announcementUrl} target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1 text-[11px] font-mono text-[#0066FF] dark:text-[#4D9FFF] hover:underline">
+                className="inline-flex items-center gap-1 text-[11px] font-mono text-[#818cf8] hover:underline">
                 <Link2 className="w-3 h-3" /> ลิงก์ประกาศ
               </a>
             )}
@@ -190,7 +189,7 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
 
       {/* Attachments */}
       {(images.length > 0 || links.length > 0 || videos.length > 0) && (
-        <div className="flex flex-col gap-3 border-t border-slate-100 dark:border-white/6 pt-3 mt-1">
+        <div className="flex flex-col gap-3 border-t border-[rgba(255,255,255,0.07)] pt-3 mt-1">
 
           {images.length > 0 && (
             <div className={`grid gap-2 ${
@@ -202,7 +201,7 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
                   key={img.id}
                   type="button"
                   onClick={() => setLightboxIndex(idx)}
-                  className="aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-[rgba(0,102,255,0.40)] transition-all group"
+                  className="aspect-video rounded-xl overflow-hidden border border-[rgba(255,255,255,0.10)] hover:border-[rgba(99,102,241,0.40)] transition-all group"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={img.url} alt={img.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" />
@@ -215,14 +214,14 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
             <div className="flex flex-wrap gap-2">
               {videos.map(v => (
                 <a key={v.id} href={v.url} target="_blank" rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 dark:bg-[rgba(255,0,110,0.08)] text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-[rgba(255,0,110,0.25)] rounded-lg text-xs font-mono hover:bg-rose-100 dark:hover:bg-[rgba(255,0,110,0.15)] transition-colors">
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(239,68,68,0.10)] text-[#fca5a5] border border-[rgba(239,68,68,0.25)] rounded-lg text-xs font-mono hover:bg-[rgba(239,68,68,0.16)] transition-colors">
                   <Film className="w-3.5 h-3.5" />
                   <span className="truncate max-w-[180px]">{v.name}</span>
                 </a>
               ))}
               {links.map(l => (
                 <a key={l.id} href={l.url} target="_blank" rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-[rgba(0,102,255,0.06)] text-[#0066FF] dark:text-[#4D9FFF] border border-blue-200 dark:border-[rgba(0,102,255,0.22)] rounded-lg text-xs font-mono hover:bg-blue-100 dark:hover:bg-[rgba(0,102,255,0.13)] transition-colors">
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[rgba(99,102,241,0.10)] text-[#c7d2fe] border border-[rgba(99,102,241,0.25)] rounded-lg text-xs font-mono hover:bg-[rgba(99,102,241,0.16)] transition-colors">
                   <Link2 className="w-3.5 h-3.5" />
                   <span className="truncate max-w-[180px]">{l.name}</span>
                 </a>
@@ -252,7 +251,7 @@ export const TimelineCard = ({ projectId, event, onRefresh, onEdit }: TimelineCa
         <div className="mt-3">
           <input
             type="text"
-            className="w-full px-3 py-2 bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/12 rounded-lg text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-white/25 focus:outline-none focus:border-[#0066FF] dark:focus:border-[#4D9FFF] focus:shadow-[0_0_0_3px_rgba(0,102,255,0.12)] transition-all"
+            className="w-full px-3 py-2 bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.10)] rounded-lg text-sm text-white/85 placeholder-white/35 focus:outline-none focus:border-[rgba(99,102,241,0.55)] focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] transition-all"
             placeholder="เหตุผล เช่น ใส่รูปผิด"
             value={deleteReason}
             onChange={e => setDeleteReason(e.target.value)}

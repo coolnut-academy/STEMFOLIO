@@ -49,7 +49,7 @@ export default function ProjectDetailPage() {
   }
 
   if (!project) {
-    return <div className="py-20 text-center text-gray-500">ไม่พบข้อมูลโครงงาน</div>;
+    return <div className="py-20 text-center text-white/50">ไม่พบข้อมูลโครงงาน</div>;
   }
 
   return (
@@ -63,24 +63,24 @@ export default function ProjectDetailPage() {
               <Badge variant="gray">ปี {project.academicYear}</Badge>
               {project.status === 'archived' && <Badge variant="yellow">จัดเก็บแล้ว</Badge>}
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{project.title}</h1>
-            {project.titleEn && <p className="text-slate-400 dark:text-slate-500 text-sm font-mono mt-1">{project.titleEn}</p>}
+            <h1 className="text-2xl font-bold text-white/92">{project.title}</h1>
+            {project.titleEn && <p className="text-white/50 text-sm mt-1">{project.titleEn}</p>}
 
-            <div className="mt-4 flex gap-6 text-sm">
+            <div className="mt-4 flex flex-wrap gap-6 text-sm">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-1.5">นักเรียน</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/45 block mb-1.5">นักเรียน</span>
                 <div className="flex flex-col gap-1">
                   {project.studentIds?.length > 0
-                    ? project.studentIds.map(id => <span key={id} className="text-slate-600 dark:text-slate-300 font-mono text-xs">{id}</span>)
-                    : <span className="text-slate-300 dark:text-slate-600 text-xs">ยังไม่มี</span>}
+                    ? project.studentIds.map(id => <span key={id} className="text-white/75 text-xs">{id}</span>)
+                    : <span className="text-white/38 text-xs italic">ยังไม่มี</span>}
                 </div>
               </div>
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-1.5">ครูที่ปรึกษา</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/45 block mb-1.5">ครูที่ปรึกษา</span>
                 <div className="flex flex-col gap-1">
                   {project.advisorIds?.length > 0
-                    ? project.advisorIds.map(id => <span key={id} className="text-slate-600 dark:text-slate-300 font-mono text-xs">{id}</span>)
-                    : <span className="text-slate-300 dark:text-slate-600 text-xs">ยังไม่มี</span>}
+                    ? project.advisorIds.map(id => <span key={id} className="text-white/75 text-xs">{id}</span>)
+                    : <span className="text-white/38 text-xs italic">ยังไม่มี</span>}
                 </div>
               </div>
             </div>
@@ -107,20 +107,20 @@ export default function ProjectDetailPage() {
 
         {/* Filter Bar */}
         <div className="flex items-center justify-between gap-4">
-          <div className="flex gap-1 bg-slate-100/80 dark:bg-[rgba(0,102,255,0.04)] p-1 rounded-xl border border-slate-200/60 dark:border-[rgba(0,102,255,0.12)]">
+          <div className="flex flex-wrap gap-1 bg-[rgba(255,255,255,0.03)] p-1 rounded-xl border border-[rgba(255,255,255,0.07)]">
             {([
-              { key: undefined,      label: 'ทั้งหมด',     color: 'text-slate-600 dark:text-slate-300' },
-              { key: 'progress',     label: 'ความคืบหน้า', color: 'text-[#0066FF] dark:text-[#4D9FFF]' },
-              { key: 'submission',   label: 'การส่งแข่ง',  color: 'text-violet-600 dark:text-violet-400' },
-              { key: 'result',       label: 'ผลลัพธ์',     color: 'text-emerald-600 dark:text-emerald-400' },
-            ] as const).map(({ key, label, color }) => (
+              { key: undefined,      label: 'ทั้งหมด',     activeColor: 'text-white/88' },
+              { key: 'progress',     label: 'ความคืบหน้า', activeColor: 'text-[#c7d2fe]' },
+              { key: 'submission',   label: 'การส่งแข่ง',  activeColor: 'text-[#c4b5fd]' },
+              { key: 'result',       label: 'ผลลัพธ์',     activeColor: 'text-[#6ee7b7]' },
+            ] as const).map(({ key, label, activeColor }) => (
               <button
                 key={String(key)}
                 type="button"
-                className={`px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                   currentFilter === key
-                    ? `bg-white dark:bg-[rgba(0,102,255,0.10)] border border-slate-200 dark:border-[rgba(0,102,255,0.28)] ${color} font-semibold shadow-sm`
-                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 border border-transparent'
+                    ? `bg-[rgba(99,102,241,0.14)] border border-[rgba(99,102,241,0.28)] ${activeColor} font-semibold`
+                    : 'text-white/45 hover:text-white/72 border border-transparent hover:bg-[rgba(255,255,255,0.04)]'
                 }`}
                 onClick={() => filterByType(key)}
               >

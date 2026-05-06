@@ -7,13 +7,13 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 export const Badge = ({ children, variant = 'gray', className = '', ...props }: BadgeProps) => {
   const variants = {
-    blue:   'bg-blue-50   text-blue-600   border-blue-200   dark:bg-blue-950/50   dark:text-blue-300   dark:border-blue-800/60',
-    green:  'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60',
-    red:    'bg-rose-50   text-rose-600   border-rose-200   dark:bg-rose-950/50   dark:text-rose-300   dark:border-rose-800/60',
-    yellow: 'bg-amber-50  text-amber-600  border-amber-200  dark:bg-amber-950/50  dark:text-amber-300  dark:border-amber-800/60',
-    purple: 'bg-violet-50 text-violet-600 border-violet-200 dark:bg-violet-950/50 dark:text-violet-300 dark:border-violet-800/60',
-    orange: 'bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800/60',
-    gray:   'bg-slate-50  text-slate-500  border-slate-200  dark:bg-white/5       dark:text-slate-400  dark:border-white/10',
+    blue:   'text-[#c7d2fe] bg-[rgba(99,102,241,0.18)]  border-[rgba(99,102,241,0.28)]',
+    green:  'text-[#6ee7b7] bg-[rgba(16,185,129,0.18)]  border-[rgba(16,185,129,0.28)]',
+    red:    'text-[#fca5a5] bg-[rgba(239,68,68,0.18)]    border-[rgba(239,68,68,0.28)]',
+    yellow: 'text-[#fcd34d] bg-[rgba(245,158,11,0.18)]  border-[rgba(245,158,11,0.28)]',
+    purple: 'text-[#d8b4fe] bg-[rgba(168,85,247,0.18)]  border-[rgba(168,85,247,0.28)]',
+    orange: 'text-[#fdba74] bg-[rgba(249,115,22,0.18)]  border-[rgba(249,115,22,0.28)]',
+    gray:   'text-white/50  bg-[rgba(255,255,255,0.07)]  border-[rgba(255,255,255,0.10)]',
   };
 
   return (

@@ -17,23 +17,26 @@ import { Folder, Send, Clock, Trophy, AlertTriangle, Trash2 } from 'lucide-react
 
 export default function AdminDashboard() {
   const [filters, setFilters] = useState<DashboardFilters>({});
-  const { 
-    stats, 
-    eventsByMonth, 
-    resultDist, 
-    categoryDist, 
-    deadlines, 
-    activity, 
-    deleteRequests, 
+  const {
+    stats,
+    eventsByMonth,
+    resultDist,
+    categoryDist,
+    deadlines,
+    activity,
+    deleteRequests,
     pendingUsers,
-    loading, 
-    refresh 
+    loading,
+    refresh
   } = useDashboardStats(filters);
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-12">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">ภาพรวมโครงการ (Dashboard)</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-white">ภาพรวมโครงการ</h1>
+          <p className="text-white/62 text-sm mt-0.5">ข้อมูลสถิติและกิจกรรมทั้งหมดในระบบ</p>
+        </div>
       </div>
 
       <FilterBar onFilterChange={setFilters} />
@@ -41,7 +44,7 @@ export default function AdminDashboard() {
       {loading && !stats ? (
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {Array.from({length: 6}).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+            {Array.from({length: 6}).map((_, i) => <Skeleton key={i} className="h-28 w-full" />)}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Skeleton className="h-80 w-full" />
@@ -63,12 +66,12 @@ export default function AdminDashboard() {
 
           {stats && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <StatsCard label="โครงงานทั้งหมด" value={stats.totalProjects} icon={<Folder className="w-6 h-6" />} colorClass="text-blue-600" bgClass="bg-blue-100" />
-              <StatsCard label="ส่งแข่งแล้ว" value={stats.totalSubmissions} icon={<Send className="w-6 h-6" />} colorClass="text-purple-600" bgClass="bg-purple-100" />
-              <StatsCard label="รอประกาศผล" value={stats.pendingResults} icon={<Clock className="w-6 h-6" />} colorClass="text-yellow-600" bgClass="bg-yellow-100" />
-              <StatsCard label="ผ่าน/ได้รางวัล" value={stats.passedOrAwarded} icon={<Trophy className="w-6 h-6" />} colorClass="text-green-600" bgClass="bg-green-100" />
-              <StatsCard label="เลยกำหนดส่ง" value={stats.missedDeadlines} icon={<AlertTriangle className="w-6 h-6" />} colorClass="text-red-600" bgClass="bg-red-100" />
-              <StatsCard label="คำขอลบ" value={stats.pendingDeletes} icon={<Trash2 className="w-6 h-6" />} colorClass="text-orange-600" bgClass="bg-orange-100" />
+              <StatsCard label="โครงงานทั้งหมด"  value={stats.totalProjects}    icon={<Folder className="w-5 h-5" />}        colorClass="text-blue-600"   bgClass="bg-blue-100" />
+              <StatsCard label="ส่งแข่งแล้ว"     value={stats.totalSubmissions} icon={<Send className="w-5 h-5" />}          colorClass="text-purple-600" bgClass="bg-purple-100" />
+              <StatsCard label="รอประกาศผล"      value={stats.pendingResults}   icon={<Clock className="w-5 h-5" />}         colorClass="text-yellow-600" bgClass="bg-yellow-100" />
+              <StatsCard label="ผ่าน/ได้รางวัล"  value={stats.passedOrAwarded}  icon={<Trophy className="w-5 h-5" />}        colorClass="text-green-600"  bgClass="bg-green-100" />
+              <StatsCard label="เลยกำหนดส่ง"     value={stats.missedDeadlines}  icon={<AlertTriangle className="w-5 h-5" />} colorClass="text-red-600"    bgClass="bg-red-100" />
+              <StatsCard label="คำขอลบ"          value={stats.pendingDeletes}   icon={<Trash2 className="w-5 h-5" />}        colorClass="text-orange-600" bgClass="bg-orange-100" />
             </div>
           )}
 

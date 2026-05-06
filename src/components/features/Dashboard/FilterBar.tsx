@@ -21,8 +21,7 @@ export const FilterBar = ({ onFilterChange }: FilterBarProps) => {
 
   useEffect(() => {
     getCategories().then(setCategories);
-    
-    // Fetch distinct academic years from projects
+
     const fetchYears = async () => {
       const snap = await getDocs(collection(db, 'projects'));
       const yrSet = new Set<string>();
@@ -40,7 +39,7 @@ export const FilterBar = ({ onFilterChange }: FilterBarProps) => {
     if (category) filters.category = category;
     if (status) filters.status = status;
     if (academicYear) filters.academicYear = academicYear;
-    
+
     if (dateRangeMode === 'thisMonth') {
       const start = new Date();
       start.setDate(1);
@@ -64,44 +63,44 @@ export const FilterBar = ({ onFilterChange }: FilterBarProps) => {
   }, [dateRangeMode, category, status, academicYear, onFilterChange]);
 
   return (
-    <GlassCard className="p-4 sticky top-4 z-20 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+    <GlassCard className="p-4 sticky top-4 z-20 flex flex-col md:flex-row gap-4 items-center justify-between">
       <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-        <button 
-          className={`px-4 py-2 text-sm rounded-lg whitespace-nowrap transition-colors ${dateRangeMode === 'all' ? 'bg-[var(--accent-blue)] text-white' : 'bg-white/50 hover:bg-white text-gray-700'}`}
-          onClick={() => setDateRangeMode('all')}
-        >
-          ทั้งหมด
-        </button>
-        <button 
-          className={`px-4 py-2 text-sm rounded-lg whitespace-nowrap transition-colors ${dateRangeMode === 'thisMonth' ? 'bg-[var(--accent-blue)] text-white' : 'bg-white/50 hover:bg-white text-gray-700'}`}
-          onClick={() => setDateRangeMode('thisMonth')}
-        >
-          เดือนนี้
-        </button>
-        <button 
-          className={`px-4 py-2 text-sm rounded-lg whitespace-nowrap transition-colors ${dateRangeMode === 'thisYear' ? 'bg-[var(--accent-blue)] text-white' : 'bg-white/50 hover:bg-white text-gray-700'}`}
-          onClick={() => setDateRangeMode('thisYear')}
-        >
-          ปีนี้
-        </button>
+        {(['all', 'thisMonth', 'thisYear'] as const).map((mode) => {
+          const labels = { all: 'ทั้งหมด', thisMonth: 'เดือนนี้', thisYear: 'ปีนี้' };
+          const active = dateRangeMode === mode;
+          return (
+            <button
+              type="button"
+              key={mode}
+              className={`px-4 py-2 text-sm rounded-xl whitespace-nowrap transition-all duration-150 font-medium ${
+                active
+                  ? 'bg-[rgba(99,102,241,0.20)] border border-[rgba(99,102,241,0.35)] text-[#c7d2fe]'
+                  : 'bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] text-white/60 hover:text-white/85 hover:bg-[rgba(255,255,255,0.08)]'
+              }`}
+              onClick={() => setDateRangeMode(mode)}
+            >
+              {labels[mode]}
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex gap-2 w-full md:w-auto">
-        <Select 
+        <Select
           value={category}
           onChange={e => setCategory(e.target.value)}
           options={[{label: 'ทุกหมวดหมู่', value: ''}, ...categories.map(c => ({label: c, value: c}))]}
         />
-        <Select 
+        <Select
           value={status}
           onChange={e => setStatus(e.target.value)}
           options={[
             {label: 'ทุกสถานะ', value: ''},
             {label: 'ดำเนินการ', value: 'active'},
-            {label: 'จัดเก็บแล้ว', value: 'archived'}
+            {label: 'จัดเก็บแล้ว', value: 'archived'},
           ]}
         />
-        <Select 
+        <Select
           value={academicYear}
           onChange={e => setAcademicYear(e.target.value)}
           options={[{label: 'ทุกปีการศึกษา', value: ''}, ...years.map(y => ({label: `ปี ${y}`, value: y}))]}

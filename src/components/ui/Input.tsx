@@ -10,7 +10,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col gap-1.5 w-full">
         {label && (
-          <label className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
+          <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/65">
             {label}
           </label>
         )}
@@ -18,23 +18,24 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           className={`
             w-full px-4 py-2.5 text-sm
-            bg-white/80 dark:bg-white/5
-            border ${error ? 'border-rose-300 shadow-[0_0_10px_rgba(225,29,72,0.12)]' : 'border-slate-200 dark:border-white/10'}
+            bg-[var(--input-bg)]
+            border ${error ? 'border-[rgba(239,68,68,0.45)] shadow-[0_0_10px_rgba(239,68,68,0.12)]' : 'border-[var(--input-border)]'}
             rounded-[var(--radius-input)]
-            text-slate-900 dark:text-slate-100
-            placeholder-slate-400 dark:placeholder-slate-600
+            text-white/90
+            placeholder-white/38
+            backdrop-blur-[8px]
             transition-all duration-200
             focus:outline-none
-            focus:border-[#0066FF] dark:focus:border-[#4D9FFF]
-            focus:bg-white dark:focus:bg-white/8
-            focus:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]
+            focus:border-[rgba(99,102,241,0.55)]
+            focus:bg-[rgba(255,255,255,0.08)]
+            focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]
             disabled:opacity-40 disabled:cursor-not-allowed
             ${className}
           `}
           {...props}
         />
         {error && (
-          <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">{error}</span>
+          <span className="text-[11px] font-medium text-[#f87171]">{error}</span>
         )}
       </div>
     );

@@ -1,8 +1,6 @@
 import React from 'react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { BottomNav } from '@/components/layout/BottomNav';
-import { TopBar } from '@/components/layout/TopBar';
 import { AuthGuard } from '@/components/layout/AuthGuard';
+import { DashboardShell } from '@/components/layout/DashboardShell';
 
 export default function DashboardLayout({
   children,
@@ -11,21 +9,7 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="min-h-screen flex">
-        {/* Desktop Sidebar */}
-        <Sidebar />
-        
-        <div className="flex-1 flex flex-col md:ml-64 pb-20 md:pb-0">
-          <TopBar />
-          
-          <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full page-transition">
-            {children}
-          </main>
-          
-          {/* Mobile Bottom Navigation */}
-          <BottomNav />
-        </div>
-      </div>
+      <DashboardShell>{children}</DashboardShell>
     </AuthGuard>
   );
 }

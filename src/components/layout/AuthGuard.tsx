@@ -48,10 +48,10 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f7fa] to-[#d5dce6]">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Spinner className="w-10 h-10 text-[var(--accent-blue)]" />
-          <p className="text-gray-500 font-medium">กำลังโหลดข้อมูล...</p>
+          <span className="cyber-spinner w-10 h-10" />
+          <p className="text-white/55 font-medium text-sm">กำลังโหลดข้อมูล…</p>
         </div>
       </div>
     );

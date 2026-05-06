@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/Toast';
-import { Zap } from 'lucide-react';
+import Image from 'next/image';
 
 function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +18,8 @@ function LoginContent() {
     if (user && userDoc) {
       const complete = userDoc.name && userDoc.classRoom && userDoc.studentId;
       if (!complete) { router.push('/complete-profile'); return; }
-      if (userDoc.status === 'pending'   && role !== 'admin') { router.push('/pending-approval'); return; }
-      if (userDoc.status === 'rejected'  && role !== 'admin') { router.push('/rejected'); return; }
+      if (userDoc.status === 'pending'  && role !== 'admin') { router.push('/pending-approval'); return; }
+      if (userDoc.status === 'rejected' && role !== 'admin') { router.push('/rejected'); return; }
       const redirect = searchParams?.get('redirect');
       router.push(redirect || (role === 'admin' ? '/admin' : '/student'));
     }
@@ -28,8 +28,6 @@ function LoginContent() {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      // signInWithGoogle now uses redirect — the page will navigate to Google.
-      // setIsLoading keeps the spinner visible until the redirect completes.
       await signInWithGoogle();
     } catch {
       showToast('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error');
@@ -40,65 +38,75 @@ function LoginContent() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden page-transition">
 
-      {/* Animated background blobs */}
+      {/* Blurred glow orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="login-blob-1" />
         <div className="login-blob-2" />
         <div className="login-blob-3" />
       </div>
 
+      {/* Star field */}
+      <div className="star-field" />
+
       {/* Grid overlay */}
       <div className="login-grid" />
 
-      {/* Login Card */}
-      <div className="relative w-full max-w-sm">
-
-        {/* Holographic border wrapper */}
+      {/* Login card */}
+      <div className="relative w-full max-w-[380px] z-10">
         <div className="holo-border rounded-[20px]">
           <div className="
-            relative bg-white/90 dark:bg-[rgba(8,12,30,0.92)] backdrop-blur-2xl
-            rounded-[20px] p-10 text-center
-            border border-white/60 dark:border-white/4
-            shadow-[0_20px_60px_rgba(0,66,180,0.12),0_4px_12px_rgba(0,0,0,0.04)]
-            dark:shadow-[0_20px_60px_rgba(0,0,0,0.50)]
+            relative
+            bg-[rgba(255,255,255,0.065)] backdrop-blur-[40px]
+            rounded-[20px] p-8 text-center
+            border border-[rgba(255,255,255,0.10)]
+            shadow-[0_24px_72px_rgba(0,0,0,0.55)]
           ">
             {/* Corner brackets */}
-            <span className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-blue-200 dark:border-[rgba(0,102,255,0.5)] rounded-tl-sm" />
-            <span className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-blue-200 dark:border-[rgba(0,102,255,0.5)] rounded-tr-sm" />
-            <span className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-blue-200 dark:border-[rgba(0,102,255,0.5)] rounded-bl-sm" />
-            <span className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-blue-200 dark:border-[rgba(0,102,255,0.5)] rounded-br-sm" />
+            <span className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-[rgba(99,102,241,0.40)] rounded-tl-sm" />
+            <span className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-[rgba(99,102,241,0.40)] rounded-tr-sm" />
+            <span className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-[rgba(99,102,241,0.40)] rounded-bl-sm" />
+            <span className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-[rgba(99,102,241,0.40)] rounded-br-sm" />
 
-            {/* Logo */}
-            <div className="mb-8 flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-[rgba(0,102,255,0.12)] border border-blue-200 dark:border-[rgba(0,102,255,0.35)] flex items-center justify-center shadow-[0_4px_20px_rgba(0,102,255,0.18)] float-anim">
-                <Zap className="w-7 h-7 text-[#0066FF]" />
+            {/* Logo + Brand */}
+            <div className="mb-7 flex flex-col items-center gap-4">
+              <div className="float-anim drop-shadow-[0_8px_32px_rgba(99,102,241,0.50)]">
+                <Image
+                  src="/logo.png"
+                  alt="STEMFOLIO"
+                  width={96}
+                  height={96}
+                  priority
+                  className="rounded-full"
+                />
               </div>
               <div>
-                <h1 className="text-3xl font-black tracking-[0.15em] gradient-text mb-1">
+                <h1 className="font-brand text-[2rem] font-black tracking-[0.18em] gradient-text mb-1">
                   STEMFOLIO
                 </h1>
-                <p className="text-[10px] font-mono text-slate-400 dark:text-white/28 uppercase tracking-[0.25em]">
+                <p className="text-[10px] font-semibold text-white/55 uppercase tracking-[0.22em]">
                   Project Lifecycle System
                 </p>
               </div>
             </div>
 
-            {/* Status line */}
-            <div className="flex items-center justify-center gap-1.5 mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
-              <span className="text-[10px] font-mono text-slate-400 dark:text-white/25 tracking-widest uppercase">Auth Gateway Online</span>
+            {/* Status indicator */}
+            <div className="flex items-center justify-center gap-2 mb-7">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.65)]" />
+              <span className="text-[10px] font-semibold text-white/55 tracking-widest uppercase">
+                Auth Gateway Online
+              </span>
             </div>
 
-            {/* Google Button */}
+            {/* Google Sign-in */}
             <Button
               type="button"
               variant="secondary"
               onClick={handleGoogleLogin}
-              className="w-full h-12 text-sm font-semibold gap-3 !justify-center"
+              className="w-full h-11 text-sm font-semibold gap-3 !justify-center"
               loading={isLoading}
             >
               {!isLoading && (
-                <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 24 24" width="17" height="17" xmlns="http://www.w3.org/2000/svg">
                   <g transform="matrix(1,0,0,1,27.009,-39.239)">
                     <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
                     <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
@@ -107,10 +115,10 @@ function LoginContent() {
                   </g>
                 </svg>
               )}
-              เข้าสู่ระบบด้วย Google
+              {isLoading ? 'กำลังเข้าสู่ระบบ…' : 'เข้าสู่ระบบด้วย Google'}
             </Button>
 
-            <p className="mt-6 text-[10px] font-mono text-slate-400 dark:text-white/18 leading-relaxed">
+            <p className="mt-5 text-[10px] font-medium text-white/45 leading-relaxed">
               เฉพาะนักเรียนและครูที่ได้รับอนุญาตเท่านั้น
             </p>
           </div>

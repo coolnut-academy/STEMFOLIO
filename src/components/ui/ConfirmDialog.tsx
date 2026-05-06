@@ -32,7 +32,7 @@ export const ConfirmDialog = ({
   return (
     <Modal isOpen={isOpen} onClose={onCancel} title={title}>
       <div className="flex flex-col gap-6">
-        <p className="text-gray-600">{message}</p>
+        <p className="text-white/70">{message}</p>
         {children}
         <div className="flex justify-end gap-3">
           <Button variant="ghost" onClick={onCancel} disabled={isLoading}>
