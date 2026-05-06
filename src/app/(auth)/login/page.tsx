@@ -73,18 +73,15 @@ function LoginContent() {
                 <Image
                   src="/logo.png"
                   alt="STEMFOLIO"
-                  width={96}
-                  height={96}
+                  width={180}
+                  height={180}
                   priority
                   className="rounded-full"
                 />
               </div>
               <div>
-                <h1 className="font-brand text-[2rem] font-black tracking-[0.18em] gradient-text mb-1">
-                  STEMFOLIO
-                </h1>
-                <p className="text-[10px] font-semibold text-white/55 uppercase tracking-[0.22em]">
-                  Project Lifecycle System
+                <p className="text-[12px] font-semibold text-white/55 uppercase tracking-[0.22em]">
+                  Projects Management System
                 </p>
               </div>
             </div>
@@ -118,7 +115,7 @@ function LoginContent() {
               {isLoading ? 'กำลังเข้าสู่ระบบ…' : 'เข้าสู่ระบบด้วย Google'}
             </Button>
 
-            <p className="mt-5 text-[10px] font-medium text-white/45 leading-relaxed">
+            <p className="mt-5 text-[15px] font-medium text-white/45 leading-relaxed">
               เฉพาะนักเรียนและครูที่ได้รับอนุญาตเท่านั้น
             </p>
           </div>
