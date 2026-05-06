@@ -56,14 +56,14 @@ export const signOut = async () => {
 export const onAuthStateChange = (callback: (user: FirebaseUser | null, userDoc: User | null, role: string | null) => void) => {
   return onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
-      // Get role from custom claims
-      const tokenResult = await getIdTokenResult(firebaseUser);
-      const role = (tokenResult.claims.role as string) || 'student';
-
       // Fetch user doc
       const userDocRef = doc(db, 'users', firebaseUser.uid);
       const userDocSnap = await getDoc(userDocRef);
       const userDoc = userDocSnap.exists() ? (userDocSnap.data() as User) : null;
+
+      // Use userDoc.role if available (since there are no Cloud Functions to sync claims), fallback to custom claims
+      const tokenResult = await getIdTokenResult(firebaseUser);
+      const role = userDoc?.role || (tokenResult.claims.role as string) || 'student';
 
       callback(firebaseUser, userDoc, role);
     } else {

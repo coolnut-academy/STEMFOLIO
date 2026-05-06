@@ -24,9 +24,9 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
         const isProfileComplete = userDoc.name && userDoc.classRoom && userDoc.studentId;
         if (!isProfileComplete) {
           router.push('/complete-profile');
-        } else if (userDoc.status === 'pending') {
+        } else if (userDoc.status === 'pending' && role !== 'admin') {
           router.push('/pending-approval');
-        } else if (userDoc.status === 'rejected') {
+        } else if (userDoc.status === 'rejected' && role !== 'admin') {
           router.push('/rejected');
         } else if (allowedRoles && role && !allowedRoles.includes(role as any)) {
           // Logged in but wrong role -> redirect to their home dashboard
@@ -57,8 +57,8 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
     !user || 
     !userDoc || 
     !isProfileComplete || 
-    userDoc.status === 'pending' || 
-    userDoc.status === 'rejected' || 
+    (userDoc.status === 'pending' && role !== 'admin') || 
+    (userDoc.status === 'rejected' && role !== 'admin') || 
     (allowedRoles && role && !allowedRoles.includes(role as any))
   ) {
     return null;

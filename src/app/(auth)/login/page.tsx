@@ -24,12 +24,12 @@ function LoginContent() {
         return;
       }
 
-      if (userDoc.status === 'pending') {
+      if (userDoc.status === 'pending' && role !== 'admin') {
         router.push('/pending-approval');
         return;
       }
 
-      if (userDoc.status === 'rejected') {
+      if (userDoc.status === 'rejected' && role !== 'admin') {
         router.push('/rejected');
         return;
       }
