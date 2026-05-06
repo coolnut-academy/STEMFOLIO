@@ -98,8 +98,8 @@ export default function StudentsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">จัดการนักเรียน</h1>
-          <p className="text-sm text-gray-500">รายชื่อนักเรียนทั้งหมดในระบบ</p>
+          <h1 className="text-2xl font-bold text-white">จัดการนักเรียน</h1>
+          <p className="text-sm text-white/50">รายชื่อนักเรียนทั้งหมดในระบบ</p>
         </div>
         <Button onClick={openCreate} className="gap-2">
           <Plus className="w-4 h-4" /> เพิ่มนักเรียน
@@ -119,7 +119,7 @@ export default function StudentsPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-500 uppercase bg-gray-50/50">
+            <thead className="text-xs text-white/50 uppercase bg-white/5">
               <tr>
                 <th className="px-4 py-3 rounded-tl-lg">ชื่อ-นามสกุล</th>
                 <th className="px-4 py-3">เลขประจำตัว</th>
@@ -137,16 +137,16 @@ export default function StudentsPage() {
                 </tr>
               ) : students.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={5} className="px-4 py-8 text-center text-white/50">
                     ไม่พบข้อมูลนักเรียน
                   </td>
                 </tr>
               ) : (
                 students.map((student) => (
-                  <tr key={student.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/30 transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-900">
+                  <tr key={student.id} className="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-3 font-medium text-white">
                       {student.name} {student.nickname ? `(${student.nickname})` : ''}
-                      <div className="text-xs text-gray-500 font-normal">{student.email}</div>
+                      <div className="text-xs text-white/50 font-normal">{student.email}</div>
                     </td>
                     <td className="px-4 py-3">{student.studentId || '-'}</td>
                     <td className="px-4 py-3">{student.classRoom || '-'}</td>

@@ -87,24 +87,67 @@ export const getStats = async (filters?: DashboardFilters): Promise<DashboardSta
   };
 };
 
+const MONTH_NAMES = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
 export const getEventsByMonth = async (filters?: DashboardFilters): Promise<{ month: string, count: number }[]> => {
-  // Simplified for prototype: returning mock data.
-  // Real implementation would group the fetched events by month.
-  return [
-    { month: 'ม.ค.', count: 12 },
-    { month: 'ก.พ.', count: 19 },
-    { month: 'มี.ค.', count: 15 },
-    { month: 'เม.ย.', count: 22 },
-    { month: 'พ.ค.', count: 30 },
-  ];
+  let projectQ: any = collection(db, 'projects');
+  if (filters?.status) projectQ = query(projectQ, where('status', '==', filters.status));
+  if (filters?.category) projectQ = query(projectQ, where('category', '==', filters.category));
+  if (filters?.academicYear) projectQ = query(projectQ, where('academicYear', '==', filters.academicYear));
+
+  const projectsSnap = await getDocs(projectQ);
+  const projects = projectsSnap.docs.map(doc => doc.data() as Project);
+
+  const counts: Record<number, number> = {};
+
+  for (const project of projects) {
+    const snap = await getDocs(collection(db, 'projects', project.id, 'timeline'));
+    snap.docs.forEach(doc => {
+      const event = doc.data() as TimelineEvent;
+      if (!event.createdAt) return;
+      const date = event.createdAt.toDate();
+      if (filters?.dateRange) {
+        if (date < filters.dateRange.start || date > filters.dateRange.end) return;
+      }
+      const m = date.getMonth();
+      counts[m] = (counts[m] || 0) + 1;
+    });
+  }
+
+  return MONTH_NAMES.map((month, i) => ({ month, count: counts[i] || 0 }));
 };
 
 export const getResultDistribution = async (filters?: DashboardFilters): Promise<{ result: string, count: number }[]> => {
+  let projectQ: any = collection(db, 'projects');
+  if (filters?.status) projectQ = query(projectQ, where('status', '==', filters.status));
+  if (filters?.category) projectQ = query(projectQ, where('category', '==', filters.category));
+  if (filters?.academicYear) projectQ = query(projectQ, where('academicYear', '==', filters.academicYear));
+
+  const projectsSnap = await getDocs(projectQ);
+  const projects = projectsSnap.docs.map(doc => doc.data() as Project);
+
+  const counts = { pass: 0, fail: 0, award: 0, pending: 0 };
+
+  for (const project of projects) {
+    const snap = await getDocs(query(collection(db, 'projects', project.id, 'timeline'), where('type', '==', 'result')));
+    snap.docs.forEach(doc => {
+      const event = doc.data() as TimelineEvent;
+      if (filters?.dateRange && event.createdAt) {
+        const date = event.createdAt.toDate();
+        if (date < filters.dateRange.start || date > filters.dateRange.end) return;
+      }
+      if (event.result === 'pass') counts.pass++;
+      else if (event.result === 'fail') counts.fail++;
+      else if (event.result === 'award') counts.award++;
+      else if (event.result === 'pending') counts.pending++;
+    });
+  }
+
   return [
-    { result: 'ผ่าน', count: 45 },
-    { result: 'ไม่ผ่าน', count: 12 },
-    { result: 'รางวัล', count: 18 },
-    { result: 'รอผล', count: 25 },
+    { result: 'ผ่าน', count: counts.pass },
+    { result: 'ไม่ผ่าน', count: counts.fail },
+    { result: 'รางวัล', count: counts.award },
+    { result: 'รอผล', count: counts.pending },
   ];
 };
 

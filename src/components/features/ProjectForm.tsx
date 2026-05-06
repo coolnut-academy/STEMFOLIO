@@ -29,6 +29,7 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
   const { user } = useAuth();
   
   const [categories, setCategories] = useState<string[]>([]);
+  const [customCategory, setCustomCategory] = useState('');
   const { advisors } = useAdvisors();
   const { students } = useStudents();
   
@@ -128,13 +129,36 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
         <Input label="ชื่อโครงงาน (EN)" value={formData.titleEn} onChange={e => setFormData({...formData, titleEn: e.target.value})} />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select 
-            label="หมวดหมู่ *" 
-            options={[{label: 'เลือกหมวดหมู่', value: ''}, ...categories.map(c => ({label: c, value: c}))]}
-            value={formData.category}
-            onChange={e => setFormData({...formData, category: e.target.value})}
-            required
-          />
+          <div className="flex flex-col gap-2">
+            <Select
+              label="หมวดหมู่ *"
+              options={[
+                {label: 'เลือกหมวดหมู่', value: ''},
+                ...categories.map(c => ({label: c, value: c})),
+                {label: 'อื่นๆ (ระบุเอง)', value: '__other__'},
+              ]}
+              value={categories.includes(formData.category) ? formData.category : formData.category ? '__other__' : ''}
+              onChange={e => {
+                if (e.target.value === '__other__') {
+                  setFormData({...formData, category: customCategory});
+                } else {
+                  setCustomCategory('');
+                  setFormData({...formData, category: e.target.value});
+                }
+              }}
+              required
+            />
+            {(!categories.includes(formData.category) && formData.category !== '') || (!categories.includes(formData.category) && customCategory !== '') ? (
+              <Input
+                placeholder="ระบุหมวดหมู่..."
+                value={customCategory || formData.category}
+                onChange={e => {
+                  setCustomCategory(e.target.value);
+                  setFormData({...formData, category: e.target.value});
+                }}
+              />
+            ) : null}
+          </div>
           <Input 
             label="ปีการศึกษา *" 
             value={formData.academicYear} 
@@ -146,41 +170,41 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
         <TextArea label="คำอธิบายสั้นๆ" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
         
         {/* Share Section */}
-        <div className="flex flex-col gap-4 mt-2 p-4 bg-gray-50 rounded-lg border border-gray-100">
+        <div className="flex flex-col gap-4 mt-2 p-4 bg-white/5 rounded-lg border border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                <Globe className="w-4 h-4 text-blue-500" /> การเผยแพร่ผลงาน (Portfolio Preview)
+              <h3 className="font-bold text-white flex items-center gap-2">
+                <Globe className="w-4 h-4 text-indigo-400" /> การเผยแพร่ผลงาน (Portfolio Preview)
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-white/50 mt-1">
                 เปิดสาธารณะเพื่อให้ผู้อื่นสามารถเข้าดู Portfolio ผ่านลิงก์ได้โดยไม่ต้องเข้าสู่ระบบ
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 className="sr-only peer"
                 checked={formData.isPublic}
                 onChange={e => setFormData({ ...formData, isPublic: e.target.checked })}
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              <span className="ml-3 text-sm font-medium text-gray-700">
+              <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/30 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+              <span className="ml-3 text-sm font-medium text-white/70">
                 {formData.isPublic ? 'สาธารณะ' : 'ส่วนตัว'}
               </span>
             </label>
           </div>
-          
+
           {initialData && formData.isPublic && (
             <div className="flex gap-2 items-center mt-2">
-              <input 
-                type="text" 
-                readOnly 
-                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/project/${initialData.id}/preview`} 
-                className="flex-1 p-2 text-sm bg-white border border-gray-300 rounded-md outline-none text-gray-500"
+              <input
+                type="text"
+                readOnly
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/project/${initialData.id}/preview`}
+                className="flex-1 p-2 text-sm bg-white/10 border border-white/20 rounded-md outline-none text-white/60"
               />
-              <Button 
-                type="button" 
-                variant="secondary" 
+              <Button
+                type="button"
+                variant="secondary"
                 className="whitespace-nowrap"
                 onClick={() => {
                   navigator.clipboard.writeText(`${window.location.origin}/project/${initialData.id}/preview`);
@@ -189,8 +213,8 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
               >
                 <Copy className="w-4 h-4 mr-2" /> คัดลอกลิงก์
               </Button>
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 variant="ghost"
                 onClick={() => window.open(`/project/${initialData.id}/preview`, '_blank')}
               >
@@ -251,17 +275,17 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
         />
 
         {initialData && (
-          <div className="mt-4 p-4 border border-blue-100 bg-blue-50/50 rounded-lg">
+          <div className="mt-4 p-4 border border-indigo-500/20 bg-indigo-500/10 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-blue-900">Invite Code</p>
-                <p className="text-sm text-blue-700">สร้างรหัสเพื่อให้นักเรียนเข้าร่วมโครงงานด้วยตนเอง</p>
+                <p className="font-medium text-white">Invite Code</p>
+                <p className="text-sm text-indigo-300">สร้างรหัสเพื่อให้นักเรียนเข้าร่วมโครงงานด้วยตนเอง</p>
               </div>
               {!inviteCode ? (
                 <Button type="button" onClick={handleGenerateInvite} variant="secondary" size="sm" loading={isLoading}>สร้าง Code</Button>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-mono font-bold tracking-widest text-blue-600">{inviteCode}</span>
+                  <span className="text-2xl font-mono font-bold tracking-widest text-indigo-400">{inviteCode}</span>
                   <Button type="button" variant="ghost" size="sm" onClick={() => {navigator.clipboard.writeText(inviteCode); showToast('Copied!', 'success');}}><Copy className="w-4 h-4" /></Button>
                 </div>
               )}
@@ -270,7 +294,7 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
         )}
       </GlassCard>
 
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-between pt-4 border-t border-white/10">
         {initialData ? (
           <Button type="button" variant="danger" onClick={() => setIsConfirmArchiveOpen(true)}>จัดเก็บ (Archive)</Button>
         ) : <div />}

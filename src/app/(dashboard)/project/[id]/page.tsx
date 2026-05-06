@@ -17,6 +17,8 @@ import { EditEventModal } from '@/components/features/Timeline/EditEventModal';
 import { TimelineEvent } from '@/types';
 import { Plus, MessageSquare } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useStudents } from '@/hooks/useStudents';
+import { useAdvisors } from '@/hooks/useAdvisors';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -25,6 +27,8 @@ export default function ProjectDetailPage() {
   const { project, loading: projectLoading } = useProject(projectId);
   const { events, loading: timelineLoading, refresh, filterByType, currentFilter } = useTimeline(projectId);
   const { role } = useAuth();
+  const { students } = useStudents();
+  const { advisors } = useAdvisors();
 
   const [isSubmissionFormOpen, setIsSubmissionFormOpen] = useState(false);
   const [isResultFormOpen, setIsResultFormOpen] = useState(false);
@@ -71,7 +75,14 @@ export default function ProjectDetailPage() {
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-white/45 block mb-1.5">นักเรียน</span>
                 <div className="flex flex-col gap-1">
                   {project.studentIds?.length > 0
-                    ? project.studentIds.map(id => <span key={id} className="text-white/75 text-xs">{id}</span>)
+                    ? project.studentIds.map(id => {
+                        const s = students.find(s => s.id === id);
+                        return (
+                          <span key={id} className="text-white/75 text-xs">
+                            {s ? `${s.name}${s.nickname ? ` (${s.nickname})` : ''}` : id}
+                          </span>
+                        );
+                      })
                     : <span className="text-white/38 text-xs italic">ยังไม่มี</span>}
                 </div>
               </div>
@@ -79,7 +90,14 @@ export default function ProjectDetailPage() {
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-white/45 block mb-1.5">ครูที่ปรึกษา</span>
                 <div className="flex flex-col gap-1">
                   {project.advisorIds?.length > 0
-                    ? project.advisorIds.map(id => <span key={id} className="text-white/75 text-xs">{id}</span>)
+                    ? project.advisorIds.map(id => {
+                        const a = advisors.find(a => a.id === id);
+                        return (
+                          <span key={id} className="text-white/75 text-xs">
+                            {a ? `${a.title || ''}${a.name}` : id}
+                          </span>
+                        );
+                      })
                     : <span className="text-white/38 text-xs italic">ยังไม่มี</span>}
                 </div>
               </div>
