@@ -24,6 +24,7 @@ export interface Advisor {
   email?: string;
   createdBy: string;
   createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface Project {
@@ -41,6 +42,7 @@ export interface Project {
   createdBy: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  timelineEventCount?: number;
 }
 
 export interface Attachment {
