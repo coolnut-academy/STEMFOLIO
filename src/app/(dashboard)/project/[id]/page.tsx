@@ -63,24 +63,24 @@ export default function ProjectDetailPage() {
               <Badge variant="gray">ปี {project.academicYear}</Badge>
               {project.status === 'archived' && <Badge variant="yellow">จัดเก็บแล้ว</Badge>}
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
-            {project.titleEn && <p className="text-gray-500 text-sm mt-1">{project.titleEn}</p>}
-            
-            <div className="mt-4 flex gap-4 text-sm">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{project.title}</h1>
+            {project.titleEn && <p className="text-slate-400 dark:text-slate-500 text-sm font-mono mt-1">{project.titleEn}</p>}
+
+            <div className="mt-4 flex gap-6 text-sm">
               <div>
-                <span className="text-gray-500 block mb-1">นักเรียน</span>
-                <div className="flex flex-col gap-1 font-medium">
-                  {project.studentIds && project.studentIds.length > 0 
-                    ? project.studentIds.map(id => <span key={id}>{id}</span>) 
-                    : <span className="text-gray-400">ยังไม่มี</span>}
+                <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-1.5">นักเรียน</span>
+                <div className="flex flex-col gap-1">
+                  {project.studentIds?.length > 0
+                    ? project.studentIds.map(id => <span key={id} className="text-slate-600 dark:text-slate-300 font-mono text-xs">{id}</span>)
+                    : <span className="text-slate-300 dark:text-slate-600 text-xs">ยังไม่มี</span>}
                 </div>
               </div>
               <div>
-                <span className="text-gray-500 block mb-1">ครูที่ปรึกษา</span>
-                <div className="flex flex-col gap-1 font-medium">
-                  {project.advisorIds && project.advisorIds.length > 0 
-                    ? project.advisorIds.map(id => <span key={id}>{id}</span>) 
-                    : <span className="text-gray-400">ยังไม่มี</span>}
+                <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500 block mb-1.5">ครูที่ปรึกษา</span>
+                <div className="flex flex-col gap-1">
+                  {project.advisorIds?.length > 0
+                    ? project.advisorIds.map(id => <span key={id} className="text-slate-600 dark:text-slate-300 font-mono text-xs">{id}</span>)
+                    : <span className="text-slate-300 dark:text-slate-600 text-xs">ยังไม่มี</span>}
                 </div>
               </div>
             </div>
@@ -107,31 +107,26 @@ export default function ProjectDetailPage() {
 
         {/* Filter Bar */}
         <div className="flex items-center justify-between gap-4">
-          <div className="flex gap-2 bg-white/50 p-1 rounded-lg border border-gray-200">
-            <button 
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${!currentFilter ? 'bg-white shadow-sm font-medium' : 'text-gray-500 hover:bg-white/50'}`}
-              onClick={() => filterByType(undefined)}
-            >
-              ทั้งหมด
-            </button>
-            <button 
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${currentFilter === 'progress' ? 'bg-white shadow-sm font-medium text-blue-600' : 'text-gray-500 hover:bg-white/50'}`}
-              onClick={() => filterByType('progress')}
-            >
-              ความคืบหน้า
-            </button>
-            <button 
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${currentFilter === 'submission' ? 'bg-white shadow-sm font-medium text-purple-600' : 'text-gray-500 hover:bg-white/50'}`}
-              onClick={() => filterByType('submission')}
-            >
-              การส่งแข่ง
-            </button>
-            <button 
-              className={`px-3 py-1 text-sm rounded-md transition-colors ${currentFilter === 'result' ? 'bg-white shadow-sm font-medium text-green-600' : 'text-gray-500 hover:bg-white/50'}`}
-              onClick={() => filterByType('result')}
-            >
-              ผลลัพธ์
-            </button>
+          <div className="flex gap-1 bg-slate-100/80 dark:bg-[rgba(0,102,255,0.04)] p-1 rounded-xl border border-slate-200/60 dark:border-[rgba(0,102,255,0.12)]">
+            {([
+              { key: undefined,      label: 'ทั้งหมด',     color: 'text-slate-600 dark:text-slate-300' },
+              { key: 'progress',     label: 'ความคืบหน้า', color: 'text-[#0066FF] dark:text-[#4D9FFF]' },
+              { key: 'submission',   label: 'การส่งแข่ง',  color: 'text-violet-600 dark:text-violet-400' },
+              { key: 'result',       label: 'ผลลัพธ์',     color: 'text-emerald-600 dark:text-emerald-400' },
+            ] as const).map(({ key, label, color }) => (
+              <button
+                key={String(key)}
+                type="button"
+                className={`px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+                  currentFilter === key
+                    ? `bg-white dark:bg-[rgba(0,102,255,0.10)] border border-slate-200 dark:border-[rgba(0,102,255,0.28)] ${color} font-semibold shadow-sm`
+                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 border border-transparent'
+                }`}
+                onClick={() => filterByType(key)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           {isAdmin && (

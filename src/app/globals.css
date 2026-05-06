@@ -1,98 +1,274 @@
 @import "tailwindcss";
 
+/* ================================================================
+   STEMFOLIO  —  WHITE SPACE Design System
+   Clean · Bright · Luxurious · High-Tech
+   ================================================================ */
+
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.45);
-  --glass-bg-hover: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.3);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --glass-blur: blur(20px) saturate(180%);
-  --accent-blue: #007AFF;
-  --accent-green: #34C759;
-  --accent-red: #FF3B30;
-  --accent-yellow: #FFCC00;
-  --accent-purple: #AF52DE;
-  --accent-orange: #FF9500;
-  --radius-card: 20px;
-  --radius-button: 14px;
-  --radius-input: 12px;
-  --radius-pill: 999px;
+  /* Space Blue Palette */
+  --space-blue:   #0066FF;
+  --space-indigo: #4F46E5;
+  --space-violet: #7C3AED;
+  --space-teal:   #0891B2;
+
+  /* Accent aliases */
+  --accent-blue:   #0066FF;
+  --accent-green:  #059669;
+  --accent-red:    #E11D48;
+  --accent-yellow: #D97706;
+  --accent-purple: #7C3AED;
+  --accent-orange: #EA580C;
+
+  /* Light Glass Surfaces */
+  --glass-bg:       rgba(255, 255, 255, 0.80);
+  --glass-bg-hover: rgba(255, 255, 255, 0.95);
+  --glass-border:   rgba(0, 102, 255, 0.09);
+  --glass-shadow:   0 4px 30px rgba(0, 66, 180, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* Radii */
+  --radius-card:   20px;
+  --radius-button: 12px;
+  --radius-input:  12px;
+  --radius-pill:   999px;
+
+  /* Glow Shadows */
+  --glow-blue:   0 0 25px rgba(0, 102, 255, 0.35), 0 0 55px rgba(0, 102, 255, 0.12);
+  --glow-green:  0 0 20px rgba(5, 150, 105, 0.32);
+  --glow-red:    0 0 20px rgba(225, 29, 72, 0.32);
+  --glow-purple: 0 0 20px rgba(124, 58, 237, 0.32);
 }
 
+/* ================================================================
+   Dark mode overrides
+   ================================================================ */
 .dark {
-  --glass-bg: rgba(30, 30, 35, 0.65);
-  --glass-bg-hover: rgba(40, 40, 45, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --accent-blue: #0A84FF;
-  --accent-green: #30D158;
-  --accent-red: #FF453A;
-  --accent-yellow: #FFD60A;
-  --accent-purple: #BF5AF2;
-  --accent-orange: #FF9F0A;
+  --glass-bg:       rgba(8, 12, 30, 0.85);
+  --glass-bg-hover: rgba(12, 18, 45, 0.92);
+  --glass-border:   rgba(100, 150, 255, 0.12);
+  --glass-shadow:   0 4px 30px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --accent-blue:    #4D9FFF;
 }
 
+/* ================================================================
+   Light Body — Pristine Spaceship
+   ================================================================ */
 body {
   font-family: "Inter", system-ui, sans-serif;
-  background-color: #f0f4f8;
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(191, 90, 242, 0.15), transparent 25%),
-    radial-gradient(circle at 50% 80%, rgba(48, 209, 88, 0.1), transparent 30%);
+  background-color: #EEF3FE;
+  background-image:
+    linear-gradient(rgba(0, 102, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 102, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 30%, rgba(0, 102, 255, 0.07)  0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 55% 85%, rgba(8, 145, 178, 0.05)  0%, transparent 45%);
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: fixed;
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #0A0E1A;
 }
 
+/* Dark body */
 .dark body {
-  background-color: #0d0d12;
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(10, 132, 255, 0.2), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(191, 90, 242, 0.2), transparent 25%),
-    radial-gradient(circle at 50% 80%, rgba(48, 209, 88, 0.15), transparent 30%);
-  color: #f1f1f1;
+  background-color: #060818;
+  background-image:
+    linear-gradient(rgba(77, 159, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 159, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 30%, rgba(77, 159, 255, 0.09)  0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.09)  0%, transparent 50%),
+    radial-gradient(ellipse at 55% 85%, rgba(20, 184, 166, 0.06)  0%, transparent 45%);
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%;
+  color: #E2E8F4;
 }
 
-@layer utilities {
-  .page-transition {
-    animation: fadeIn 0.4s ease-out;
-  }
-  
-  .shimmer {
-    background: #f6f7f8;
-    background-image: linear-gradient(
-      to right,
-      #f6f7f8 0%,
-      #edeef1 20%,
-      #f6f7f8 40%,
-      #f6f7f8 100%
-    );
-    background-repeat: no-repeat;
-    background-size: 800px 100%; 
-    animation-duration: 1.5s;
-    animation-fill-mode: forwards; 
-    animation-iteration-count: infinite;
-    animation-name: shimmerAnimation;
-    animation-timing-function: linear;
-  }
-  
-  .dark .shimmer {
-    background: #2a2a30;
-    background-image: linear-gradient(
-      to right,
-      #2a2a30 0%,
-      #3a3a40 20%,
-      #2a2a30 40%,
-      #2a2a30 100%
-    );
-  }
-}
+/* ================================================================
+   Keyframes
+   ================================================================ */
 
-@keyframes fadeIn {
+@keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes shimmerAnimation {
-  0% { background-position: -468px 0; }
-  100% { background-position: 468px 0; }
+@keyframes holographic {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes lightShimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-7px); }
+}
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,102,255,0.08); }
+  50%       { box-shadow: 0 0 20px rgba(0,102,255,0.20); }
+}
+
+/* ================================================================
+   Utility Classes
+   ================================================================ */
+@layer utilities {
+
+  .page-transition {
+    animation: fadeInUp 0.4s ease-out both;
+  }
+
+  /* ── Text styles ── */
+  .neon-text {
+    color: #0066FF;
+    font-weight: 800;
+  }
+  .dark .neon-text {
+    color: #4D9FFF;
+    text-shadow: 0 0 12px rgba(77, 159, 255, 0.6), 0 0 28px rgba(77, 159, 255, 0.25);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* ── Animations ── */
+  .float-anim  { animation: float 3.2s ease-in-out infinite; }
+  .soft-pulse  { animation: subtlePulse 2.4s ease-in-out infinite; }
+
+  /* ── Spinner (light) ── */
+  .cyber-spinner {
+    display: inline-block;
+    border-radius: 9999px;
+    border: 2px solid rgba(0, 102, 255, 0.15);
+    border-top-color: #0066FF;
+    box-shadow: 0 0 6px rgba(0, 102, 255, 0.25);
+    animation: spin 0.75s linear infinite;
+    flex-shrink: 0;
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .dark .cyber-spinner {
+    border-color: rgba(77, 159, 255, 0.15);
+    border-top-color: #4D9FFF;
+    box-shadow: 0 0 8px rgba(77, 159, 255, 0.40);
+  }
+
+  /* ── Skeleton shimmer (light) ── */
+  .shimmer {
+    background: rgba(0, 102, 255, 0.025);
+    background-image: linear-gradient(
+      90deg,
+      rgba(0, 102, 255, 0.00) 0%,
+      rgba(0, 102, 255, 0.06) 38%,
+      rgba(124, 58, 237, 0.05) 62%,
+      rgba(0, 102, 255, 0.00) 100%
+    );
+    background-size: 600px 100%;
+    background-repeat: no-repeat;
+    animation: lightShimmer 1.8s linear infinite;
+    border: 1px solid rgba(0, 102, 255, 0.05);
+    border-radius: 8px;
+  }
+  .dark .shimmer {
+    background: rgba(77, 159, 255, 0.04);
+    background-image: linear-gradient(
+      90deg,
+      rgba(77, 159, 255, 0.00) 0%,
+      rgba(77, 159, 255, 0.08) 38%,
+      rgba(168, 85, 247, 0.06) 62%,
+      rgba(77, 159, 255, 0.00) 100%
+    );
+    border-color: rgba(77, 159, 255, 0.07);
+  }
+
+  /* ── Holographic border (prismatic) ── */
+  .holo-border { position: relative; }
+  .holo-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 102, 255, 0.9)  0%,
+      rgba(124, 58, 237, 0.9) 25%,
+      rgba(8, 145, 178, 0.9)  50%,
+      rgba(79, 70, 229, 0.9)  75%,
+      rgba(0, 102, 255, 0.9) 100%
+    );
+    background-size: 300% 300%;
+    animation: holographic 4s ease infinite;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    padding: 1px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Empty state glow ── */
+  .empty-state-glow {
+    background: radial-gradient(ellipse at 50% 50%, rgba(0, 102, 255, 0.04) 0%, transparent 65%);
+  }
+  .dark .empty-state-glow {
+    background: radial-gradient(ellipse at 50% 50%, rgba(77, 159, 255, 0.06) 0%, transparent 65%);
+  }
+
+  /* ── Login blobs ── */
+  .login-blob-1 {
+    position: absolute;
+    top: 20%; left: 15%;
+    width: 26rem; height: 26rem;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.09) 0%, transparent 70%);
+    animation: float 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .login-blob-2 {
+    position: absolute;
+    bottom: 20%; right: 15%;
+    width: 22rem; height: 22rem;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+    animation: float 4s ease-in-out infinite;
+    animation-delay: 1.4s;
+    pointer-events: none;
+  }
+  .login-blob-3 {
+    position: absolute;
+    top: 60%; left: 40%;
+    width: 18rem; height: 18rem;
+    background: radial-gradient(circle, rgba(8, 145, 178, 0.07) 0%, transparent 70%);
+    animation: float 4s ease-in-out infinite;
+    animation-delay: 2.8s;
+    pointer-events: none;
+  }
+  .login-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 102, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 102, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
 }

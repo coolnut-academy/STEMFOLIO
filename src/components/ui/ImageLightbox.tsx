@@ -13,22 +13,16 @@ interface ImageLightboxProps {
 
 export const ImageLightbox = ({ isOpen, images, currentIndex, onClose, onNavigate }: ImageLightboxProps) => {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKey = (e: KeyboardEvent) => {
       if (!isOpen) return;
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') onNavigate((currentIndex - 1 + images.length) % images.length);
-      if (e.key === 'ArrowRight') onNavigate((currentIndex + 1) % images.length);
+      if (e.key === 'Escape')      onClose();
+      if (e.key === 'ArrowLeft')   onNavigate((currentIndex - 1 + images.length) % images.length);
+      if (e.key === 'ArrowRight')  onNavigate((currentIndex + 1) % images.length);
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
+    window.addEventListener('keydown', handleKey);
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKey);
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, currentIndex, images.length, onClose, onNavigate]);
@@ -36,44 +30,53 @@ export const ImageLightbox = ({ isOpen, images, currentIndex, onClose, onNavigat
   if (!isOpen || images.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm animate-in fade-in duration-200">
-      <button 
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(2,0,12,0.96)] backdrop-blur-md animate-in fade-in duration-200">
+      {/* Close */}
+      <button
+        type="button"
+        aria-label="ปิด"
         onClick={onClose}
-        className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors z-10"
+        className="absolute top-5 right-5 p-2.5 rounded-xl border border-[rgba(0,212,255,0.20)] text-white/40 hover:text-[var(--neon-cyan)] hover:border-[rgba(0,212,255,0.50)] hover:bg-[rgba(0,212,255,0.08)] transition-all z-10"
       >
-        <X className="w-8 h-8" />
+        <X className="w-5 h-5" />
       </button>
 
+      {/* Prev */}
       {images.length > 1 && (
-        <button 
+        <button
+          type="button"
+          aria-label="ภาพก่อนหน้า"
           onClick={() => onNavigate((currentIndex - 1 + images.length) % images.length)}
-          className="absolute left-6 p-2 text-white/70 hover:text-white transition-colors"
+          className="absolute left-5 p-3 rounded-xl border border-[rgba(0,212,255,0.20)] text-white/40 hover:text-[var(--neon-cyan)] hover:border-[rgba(0,212,255,0.50)] hover:bg-[rgba(0,212,255,0.08)] transition-all"
         >
-          <ChevronLeft className="w-10 h-10" />
+          <ChevronLeft className="w-7 h-7" />
         </button>
       )}
 
-      <div className="relative w-full max-w-5xl max-h-[85vh] px-16 flex items-center justify-center">
+      {/* Image */}
+      <div className="relative w-full max-w-5xl max-h-[88vh] px-20 flex flex-col items-center justify-center gap-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img 
-          src={images[currentIndex]} 
-          alt={`Image ${currentIndex + 1}`}
-          className="max-w-full max-h-[85vh] object-contain animate-in zoom-in-95 duration-200"
+        <img
+          src={images[currentIndex]}
+          alt={`ภาพที่ ${currentIndex + 1}`}
+          className="max-w-full max-h-[80vh] object-contain rounded-xl shadow-[0_0_60px_rgba(0,212,255,0.12)] animate-in zoom-in-95 duration-200"
         />
-        
         {images.length > 1 && (
-          <div className="absolute bottom-[-40px] left-0 right-0 text-center text-white/70 text-sm">
+          <span className="text-xs font-mono text-white/30">
             {currentIndex + 1} / {images.length}
-          </div>
+          </span>
         )}
       </div>
 
+      {/* Next */}
       {images.length > 1 && (
-        <button 
+        <button
+          type="button"
+          aria-label="ภาพถัดไป"
           onClick={() => onNavigate((currentIndex + 1) % images.length)}
-          className="absolute right-6 p-2 text-white/70 hover:text-white transition-colors"
+          className="absolute right-5 p-3 rounded-xl border border-[rgba(0,212,255,0.20)] text-white/40 hover:text-[var(--neon-cyan)] hover:border-[rgba(0,212,255,0.50)] hover:bg-[rgba(0,212,255,0.08)] transition-all"
         >
-          <ChevronRight className="w-10 h-10" />
+          <ChevronRight className="w-7 h-7" />
         </button>
       )}
     </div>

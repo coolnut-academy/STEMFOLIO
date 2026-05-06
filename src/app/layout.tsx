@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="th" suppressHydrationWarning>
       <body className="antialiased text-gray-900 dark:text-gray-100">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <ToastProvider>
           <AuthProvider>
             {children}

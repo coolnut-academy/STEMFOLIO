@@ -6,6 +6,6 @@ interface SkeletonProps {
 
 export const Skeleton = ({ className = '' }: SkeletonProps) => {
   return (
-    <div className={`shimmer rounded-md ${className}`} />
+    <div className={`shimmer rounded-[var(--radius-input)] ${className}`} />
   );
 };
