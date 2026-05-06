@@ -1,5 +1,6 @@
 import {
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
@@ -15,9 +16,19 @@ export const signInWithGoogle = async () => {
   provider.setCustomParameters({
     prompt: 'select_account'
   });
-  
-  const userCredential = await signInWithPopup(auth, provider);
-  const user = userCredential.user;
+  // Use redirect instead of popup to avoid COOP cross-origin issues
+  await signInWithRedirect(auth, provider);
+};
+
+/**
+ * Call this once on app load to process the redirect result from Google Sign-In.
+ * Creates the Firestore user document if this is the first sign-in.
+ */
+export const handleRedirectResult = async () => {
+  const result = await getRedirectResult(auth);
+  if (!result) return null;
+
+  const user = result.user;
 
   // Check if user doc exists
   const userDocRef = doc(db, 'users', user.uid);

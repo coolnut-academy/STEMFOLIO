@@ -28,10 +28,11 @@ function LoginContent() {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
+      // signInWithGoogle now uses redirect — the page will navigate to Google.
+      // setIsLoading keeps the spinner visible until the redirect completes.
       await signInWithGoogle();
     } catch {
       showToast('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error');
-    } finally {
       setIsLoading(false);
     }
   };

@@ -45,24 +45,7 @@ export const getStats = async (filters?: DashboardFilters): Promise<DashboardSta
     };
   }
 
-  // Use Collection Group query for all timeline events to aggregate
-  // In a real app, filtering by projectIds in a collectionGroup might require splitting into batches of 10.
-  // We'll fetch all events and filter locally since this is a demo/prototype.
-  const timelineQ = query(collectionGroup(db, 'timeline'));
-  const timelineSnap = await getDocs(timelineQ);
-  const events = timelineSnap.docs.map(doc => doc.data() as TimelineEvent);
-
   const now = new Date();
-
-  events.forEach(event => {
-    // Check if event belongs to the filtered projects
-    // We can extract projectId from doc.ref.parent.parent.id
-    // But since we don't have projectId inside event data natively, we might need a workaround.
-    // Let's assume we can't filter by project accurately without doc metadata here,
-    // so we will query projects first, then for each project query timeline?
-    // It's less performant. Let's assume dashboard stats are global for simplicity,
-    // OR we will use a loop. For prototype, loop is fine if not too many.
-  });
 
   // To make it robust, we'll iterate through projects and fetch their timelines.
   // This satisfies the filters on projects.

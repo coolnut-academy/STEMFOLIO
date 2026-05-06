@@ -1,9 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User as FirebaseUser } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { User } from '@/types';
-import { onAuthStateChange, signInWithGoogle, signOut as authSignOut } from '@/lib/auth';
+import { auth, db } from '@/lib/firebase';
+import { signInWithGoogle, signOut as authSignOut, handleRedirectResult } from '@/lib/auth';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -30,10 +32,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((firebaseUser, fetchedUserDoc, fetchedRole) => {
-      setUser(firebaseUser);
-      setUserDoc(fetchedUserDoc);
-      setRole(fetchedRole);
+    // Kick off redirect-result processing immediately. We keep a reference to
+    // this promise so the auth-state handler can wait for it before committing
+    // state — preventing the brief null-user flash that causes AuthGuard to
+    // redirect to /login before Firebase has finished processing the redirect.
+    const redirectPromise = handleRedirectResult().catch((e) => {
+      console.error('[auth] redirect result error:', e);
+    });
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // Always wait for redirect processing to settle first.
+      await redirectPromise;
+
+      if (firebaseUser) {
+        try {
+          const snap = await getDoc(doc(db, 'users', firebaseUser.uid));
+          const fetchedUserDoc = snap.exists() ? (snap.data() as User) : null;
+          const fetchedRole = fetchedUserDoc?.role ?? 'student';
+          setUser(firebaseUser);
+          setUserDoc(fetchedUserDoc);
+          setRole(fetchedRole);
+        } catch (e) {
+          console.error('[auth] failed to fetch user doc:', e);
+          setUser(firebaseUser);
+          setUserDoc(null);
+          setRole('student');
+        }
+      } else {
+        setUser(null);
+        setUserDoc(null);
+        setRole(null);
+      }
+
       setLoading(false);
     });
 

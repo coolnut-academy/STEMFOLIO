@@ -43,6 +43,13 @@ service cloud.firestore {
     }
 
     // --- Timeline Events ---
+    // collectionGroup queries need a top-level wildcard match in addition to the
+    // scoped rule below. Without this, getDocs(collectionGroup(db,'timeline'))
+    // returns PERMISSION_DENIED even for admins.
+    match /{path=**}/timeline/{eventId} {
+      allow read: if isAdmin();
+    }
+
     match /projects/{projectId}/timeline/{eventId} {
       allow read: if request.auth != null &&
         (isAdmin() || isProjectMember(projectId));
