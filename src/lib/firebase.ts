@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -14,10 +14,18 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
 
-// Enable offline persistence (call once)
-if (typeof window !== 'undefined') {
-  enableIndexedDbPersistence(db).catch(console.error);
+// Initialize Firestore with local cache
+let dbInstance;
+try {
+  // Attempt to initialize with cache
+  dbInstance = initializeFirestore(app, {
+    localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+  });
+} catch (e) {
+  // Fallback if initializeFirestore is already called
+  dbInstance = getFirestore(app);
 }
+
+export const db = dbInstance;
+export const storage = getStorage(app);
