@@ -29,7 +29,8 @@ export const useDashboardStats = (filters?: DashboardFilters) => {
         catData,
         dlData,
         actData,
-        delData
+        delData,
+        pendData
       ] = await Promise.all([
         getStats(filters),
         getEventsByMonth(filters),
