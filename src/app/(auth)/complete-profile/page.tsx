@@ -28,6 +28,8 @@ function CompleteProfileContent() {
     if (!loading) {
       if (!user) {
         router.push('/login');
+      } else if (userDoc?.loginType === 'original') {
+        router.push('/student');
       } else if (userDoc?.name && userDoc?.classRoom && userDoc?.studentId) {
         if (userDoc.status === 'pending') {
           router.push('/pending-approval');

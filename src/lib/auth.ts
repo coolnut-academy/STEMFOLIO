@@ -1,10 +1,12 @@
 import {
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithCustomToken,
   signOut as firebaseSignOut,
   User as FirebaseUser,
 } from 'firebase/auth';
-import { auth, db } from './firebase';
+import { httpsCallable } from 'firebase/functions';
+import { auth, db, functions } from './firebase';
 import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { User } from '@/types';
 
@@ -40,6 +42,13 @@ export const updateProfile = async (uid: string, data: Partial<User>) => {
     ...data,
     updatedAt: serverTimestamp(),
   });
+};
+
+export const signInWithStudentId = async (studentId: string): Promise<FirebaseUser> => {
+  const loginFn = httpsCallable<{ studentId: string }, { token: string }>(functions, 'loginWithStudentId');
+  const result = await loginFn({ studentId });
+  const credential = await signInWithCustomToken(auth, result.data.token);
+  return credential.user;
 };
 
 export const signOut = async () => {

@@ -5,7 +5,7 @@ import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { User } from '@/types';
 import { auth, db } from '@/lib/firebase';
-import { signInWithGoogle, signOut as authSignOut } from '@/lib/auth';
+import { signInWithGoogle, signInWithStudentId, signOut as authSignOut } from '@/lib/auth';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -13,6 +13,7 @@ interface AuthContextType {
   role: string | null;
   loading: boolean;
   signInWithGoogle: typeof signInWithGoogle;
+  signInWithStudentId: typeof signInWithStudentId;
   signOut: typeof authSignOut;
 }
 
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   loading: true,
   signInWithGoogle: signInWithGoogle,
+  signInWithStudentId: signInWithStudentId,
   signOut: authSignOut,
 });
 
@@ -70,7 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, userDoc, role, loading, signInWithGoogle, signOut: authSignOut }}>
+    <AuthContext.Provider value={{ user, userDoc, role, loading, signInWithGoogle, signInWithStudentId, signOut: authSignOut }}>
       {children}
     </AuthContext.Provider>
   );

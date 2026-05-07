@@ -8,31 +8,43 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { Badge } from '@/components/ui/Badge';
-import { Search, Plus, Trash2, Edit2 } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, UserPlus } from 'lucide-react';
 import { User } from '@/types';
 import { updateUser, deleteStudent } from '@/lib/firestore/users';
 import { useToast } from '@/components/ui/Toast';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@/lib/firebase';
 
 export default function StudentsPage() {
   const { students, loading, search, refresh } = useStudents();
   const { showToast } = useToast();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<User | null>(null);
-  
+
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [deletingStudentId, setDeletingStudentId] = useState<string | null>(null);
-  
-  const [formData, setFormData] = useState({
+
+  const [editFormData, setEditFormData] = useState({
     name: '',
     nickname: '',
     studentId: '',
     classRoom: '',
     phone: '',
   });
+
+  const [addFormData, setAddFormData] = useState({
+    name: '',
+    surname: '',
+    studentId: '',
+    classRoom: '',
+    email: '',
+  });
+  const [isAddLoading, setIsAddLoading] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -42,36 +54,58 @@ export default function StudentsPage() {
 
   const openEdit = (student: User) => {
     setEditingStudent(student);
-    setFormData({
+    setEditFormData({
       name: student.name,
       nickname: student.nickname || '',
       studentId: student.studentId || '',
       classRoom: student.classRoom || '',
       phone: student.phone || '',
     });
-    setIsFormOpen(true);
+    setIsEditOpen(true);
   };
 
-  // Note: App adds students via "Join Project" or manual auth creation. 
-  // For admin manual add, it requires calling Firebase Auth to create the account,
-  // which normally is done client-side if they use join page, or via cloud function.
-  // We'll leave the "Add Student" button as a placeholder or info for Phase 2 as per spec.
-  const openCreate = () => {
-    showToast('การเพิ่มนักเรียนใหม่ ให้นักเรียนสมัครผ่านหน้าเข้าสู่ระบบ', 'info');
+  const openAdd = () => {
+    setAddFormData({ name: '', surname: '', studentId: '', classRoom: '', email: '' });
+    setIsAddOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingStudent) return;
-    
     try {
-      await updateUser(editingStudent.id, formData);
+      await updateUser(editingStudent.id, editFormData);
       showToast('อัปเดตข้อมูลนักเรียนสำเร็จ', 'success');
-      setIsFormOpen(false);
+      setIsEditOpen(false);
       refresh();
     } catch (error) {
       console.error(error);
       showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
+    }
+  };
+
+  const handleAddStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addFormData.name || !addFormData.surname || !addFormData.studentId) {
+      showToast('กรุณากรอกชื่อ นามสกุล และเลขประจำตัว', 'error');
+      return;
+    }
+    setIsAddLoading(true);
+    try {
+      const createFn = httpsCallable(functions, 'createOriginalStudent');
+      await createFn(addFormData);
+      showToast(`เพิ่มนักเรียน ${addFormData.name} ${addFormData.surname} สำเร็จ`, 'success');
+      setIsAddOpen(false);
+      refresh();
+    } catch (error: any) {
+      const code = error?.code ?? '';
+      if (code === 'functions/already-exists') {
+        showToast('เลขประจำตัวนี้มีในระบบแล้ว', 'error');
+      } else {
+        console.error(error);
+        showToast('เกิดข้อผิดพลาดในการเพิ่มนักเรียน', 'error');
+      }
+    } finally {
+      setIsAddLoading(false);
     }
   };
 
@@ -86,7 +120,7 @@ export default function StudentsPage() {
       await deleteStudent(deletingStudentId);
       showToast('ลบนักเรียนออกจากระบบสำเร็จ', 'success');
       setIsConfirmOpen(false);
-      setIsFormOpen(false);
+      setIsEditOpen(false);
       refresh();
     } catch (error) {
       console.error(error);
@@ -101,7 +135,7 @@ export default function StudentsPage() {
           <h1 className="text-2xl font-bold text-white">จัดการนักเรียน</h1>
           <p className="text-sm text-white/50">รายชื่อนักเรียนทั้งหมดในระบบ</p>
         </div>
-        <Button onClick={openCreate} className="gap-2">
+        <Button onClick={openAdd} className="gap-2">
           <Plus className="w-4 h-4" /> เพิ่มนักเรียน
         </Button>
       </div>
@@ -109,8 +143,8 @@ export default function StudentsPage() {
       <GlassCard className="p-4 md:p-6 flex flex-col gap-4">
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input 
-            placeholder="ค้นหาชื่อ, เลขประจำตัว..." 
+          <Input
+            placeholder="ค้นหาชื่อ, เลขประจำตัว..."
             className="pl-9"
             value={searchQuery}
             onChange={handleSearch}
@@ -146,7 +180,12 @@ export default function StudentsPage() {
                   <tr key={student.id} className="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3 font-medium text-white">
                       {student.name} {student.nickname ? `(${student.nickname})` : ''}
-                      <div className="text-xs text-white/50 font-normal">{student.email}</div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-white/50 font-normal">{student.email || '-'}</span>
+                        {student.loginType === 'original' && (
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 uppercase tracking-wide">Original</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">{student.studentId || '-'}</td>
                     <td className="px-4 py-3">{student.classRoom || '-'}</td>
@@ -154,7 +193,7 @@ export default function StudentsPage() {
                       <div className="flex gap-1 flex-wrap">
                         {student.projectIds && student.projectIds.length > 0 ? (
                           student.projectIds.map(pid => (
-                            <Badge key={pid} variant="blue">{pid.slice(0,6)}...</Badge>
+                            <Badge key={pid} variant="blue">{pid.slice(0, 6)}...</Badge>
                           ))
                         ) : (
                           <span className="text-gray-400">-</span>
@@ -174,31 +213,91 @@ export default function StudentsPage() {
         </div>
       </GlassCard>
 
-      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title="แก้ไขข้อมูลนักเรียน">
+      {/* Add Original Student Modal */}
+      <Modal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="เพิ่มนักเรียน (Original Mode)">
+        <form onSubmit={handleAddStudent} className="flex flex-col gap-4">
+          <p className="text-sm text-white/60">
+            นักเรียนจะสามารถเข้าสู่ระบบด้วยเลขประจำตัวนักเรียนได้ทันที โดยไม่ต้องใช้ Google
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="ชื่อ *"
+              placeholder="สมชาย"
+              value={addFormData.name}
+              onChange={e => setAddFormData({ ...addFormData, name: e.target.value })}
+              required
+              disabled={isAddLoading}
+            />
+            <Input
+              label="นามสกุล *"
+              placeholder="ใจดี"
+              value={addFormData.surname}
+              onChange={e => setAddFormData({ ...addFormData, surname: e.target.value })}
+              required
+              disabled={isAddLoading}
+            />
+          </div>
+          <Input
+            label="เลขประจำตัวนักเรียน *"
+            placeholder="เช่น 12345"
+            value={addFormData.studentId}
+            onChange={e => setAddFormData({ ...addFormData, studentId: e.target.value })}
+            required
+            disabled={isAddLoading}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="ห้องเรียน"
+              placeholder="เช่น ม.5/1"
+              value={addFormData.classRoom}
+              onChange={e => setAddFormData({ ...addFormData, classRoom: e.target.value })}
+              disabled={isAddLoading}
+            />
+            <Input
+              label="อีเมล (ไม่บังคับ)"
+              type="email"
+              placeholder="student@school.ac.th"
+              value={addFormData.email}
+              onChange={e => setAddFormData({ ...addFormData, email: e.target.value })}
+              disabled={isAddLoading}
+            />
+          </div>
+          <div className="flex justify-end gap-2 mt-2 pt-4 border-t border-white/10">
+            <Button type="button" variant="ghost" onClick={() => setIsAddOpen(false)} disabled={isAddLoading}>ยกเลิก</Button>
+            <Button type="submit" loading={isAddLoading} className="gap-2">
+              <UserPlus className="w-4 h-4" />
+              {isAddLoading ? 'กำลังเพิ่ม…' : 'เพิ่มนักเรียน'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Student Modal */}
+      <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} title="แก้ไขข้อมูลนักเรียน">
         <form onSubmit={handleSave} className="flex flex-col gap-4">
-          <Input label="ชื่อ-นามสกุล *" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+          <Input label="ชื่อ-นามสกุล *" value={editFormData.name} onChange={e => setEditFormData({ ...editFormData, name: e.target.value })} required />
           <div className="grid grid-cols-2 gap-4">
-            <Input label="ชื่อเล่น" value={formData.nickname} onChange={e => setFormData({...formData, nickname: e.target.value})} />
-            <Input label="เลขประจำตัว" value={formData.studentId} onChange={e => setFormData({...formData, studentId: e.target.value})} />
+            <Input label="ชื่อเล่น" value={editFormData.nickname} onChange={e => setEditFormData({ ...editFormData, nickname: e.target.value })} />
+            <Input label="เลขประจำตัว" value={editFormData.studentId} onChange={e => setEditFormData({ ...editFormData, studentId: e.target.value })} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Input label="ห้องเรียน" value={formData.classRoom} onChange={e => setFormData({...formData, classRoom: e.target.value})} />
-            <Input label="เบอร์โทรศัพท์" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+            <Input label="ห้องเรียน" value={editFormData.classRoom} onChange={e => setEditFormData({ ...editFormData, classRoom: e.target.value })} />
+            <Input label="เบอร์โทรศัพท์" value={editFormData.phone} onChange={e => setEditFormData({ ...editFormData, phone: e.target.value })} />
           </div>
-          
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
             <Button type="button" variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => confirmDelete(editingStudent?.id!)}>
               <Trash2 className="w-4 h-4 mr-2" /> ลบออกจากระบบ
             </Button>
             <div className="flex gap-2">
-              <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)}>ยกเลิก</Button>
+              <Button type="button" variant="ghost" onClick={() => setIsEditOpen(false)}>ยกเลิก</Button>
               <Button type="submit">บันทึก</Button>
             </div>
           </div>
         </form>
       </Modal>
 
-      <ConfirmDialog 
+      <ConfirmDialog
         isOpen={isConfirmOpen}
         title="ยืนยันการลบนักเรียน"
         message="การลบนักเรียนจะนำนักเรียนออกจากโครงงานทั้งหมด แต่จะไม่ลบบัญชีผู้ใช้ (Soft Delete) ยืนยันหรือไม่?"

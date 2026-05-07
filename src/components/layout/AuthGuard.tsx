@@ -32,8 +32,8 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
         return;
       }
 
-      // Student checks
-      const isProfileComplete = userDoc.name && userDoc.classRoom && userDoc.studentId;
+      // Student checks — original mode students are pre-approved with complete profiles
+      const isProfileComplete = userDoc.loginType === 'original' || (userDoc.name && userDoc.classRoom && userDoc.studentId);
       if (!isProfileComplete) {
         router.push('/complete-profile');
       } else if (userDoc.status === 'pending') {
@@ -67,7 +67,7 @@ export const AuthGuard = ({ children, allowedRoles }: AuthGuardProps) => {
   }
 
   // Student render guard
-  const isProfileComplete = userDoc?.name && userDoc?.classRoom && userDoc?.studentId;
+  const isProfileComplete = userDoc?.loginType === 'original' || (userDoc?.name && userDoc?.classRoom && userDoc?.studentId);
   if (
     !userDoc ||
     !isProfileComplete ||

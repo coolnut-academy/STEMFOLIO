@@ -4,21 +4,10 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 
 export const setAdminRole = functions.https.onCall(async (request: any) => {
-  // Authentication check: Only allow existing admins to make others admins.
-  // In a real production app with no initial admin, you might check against a hardcoded email
-  // or allow the very first user to become an admin.
-  // For this project setup, we will allow anyone to claim admin for testing if no one is admin,
-  // OR we restrict it. Let's restrict it to context.auth.token.role === 'admin' OR hardcoded email.
-  
   const email = request.data?.email || request.email;
   if (!email) {
     throw new functions.https.HttpsError("invalid-argument", "Email is required.");
   }
-
-  // Example: If you want to restrict to a specific email for the first admin:
-  // if (context.auth?.token.email !== 'your-admin@example.com' && context.auth?.token.role !== 'admin') {
-  //   throw new functions.https.HttpsError("permission-denied", "Must be an admin to grant admin role.");
-  // }
 
   try {
     const user = await admin.auth().getUserByEmail(email);
@@ -27,4 +16,76 @@ export const setAdminRole = functions.https.onCall(async (request: any) => {
   } catch (error) {
     throw new functions.https.HttpsError("internal", `Error setting admin role: ${error}`);
   }
+});
+
+export const createOriginalStudent = functions.https.onCall(async (request: any) => {
+  if (!request.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Must be authenticated.");
+  }
+
+  const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
+  if (!callerDoc.exists || callerDoc.data()?.role !== "admin") {
+    throw new functions.https.HttpsError("permission-denied", "Must be admin.");
+  }
+
+  const { name, surname, studentId, classRoom, email } = request.data;
+  if (!name || !surname || !studentId) {
+    throw new functions.https.HttpsError("invalid-argument", "name, surname, and studentId are required.");
+  }
+
+  // Check for duplicate studentId among original-mode users
+  const existing = await admin.firestore()
+    .collection("users")
+    .where("studentId", "==", studentId)
+    .get();
+
+  const duplicate = existing.docs.find(d => d.data().loginType === "original");
+  if (duplicate) {
+    throw new functions.https.HttpsError("already-exists", "Student ID already exists.");
+  }
+
+  // Create Firebase Auth user (no email/password — login is via custom token only)
+  const authUser = await admin.auth().createUser({
+    displayName: `${name} ${surname}`,
+    ...(email ? { email } : {}),
+  });
+
+  const now = admin.firestore.FieldValue.serverTimestamp();
+  await admin.firestore().collection("users").doc(authUser.uid).set({
+    id: authUser.uid,
+    email: email || "",
+    name: `${name} ${surname}`,
+    surname,
+    studentId,
+    classRoom: classRoom || "",
+    role: "student",
+    loginType: "original",
+    status: "approved",
+    projectIds: [],
+    profileImageUrl: null,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  return { uid: authUser.uid };
+});
+
+export const loginWithStudentId = functions.https.onCall(async (request: any) => {
+  const { studentId } = request.data;
+  if (!studentId) {
+    throw new functions.https.HttpsError("invalid-argument", "studentId is required.");
+  }
+
+  const snapshot = await admin.firestore()
+    .collection("users")
+    .where("studentId", "==", studentId)
+    .get();
+
+  const studentDoc = snapshot.docs.find(d => d.data().loginType === "original");
+  if (!studentDoc) {
+    throw new functions.https.HttpsError("not-found", "Student ID not found.");
+  }
+
+  const token = await admin.auth().createCustomToken(studentDoc.id);
+  return { token };
 });

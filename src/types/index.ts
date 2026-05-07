@@ -4,8 +4,10 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  surname?: string;
   nickname?: string;
   role: 'admin' | 'student';
+  loginType?: 'google' | 'original';
   profileImageUrl?: string;
   studentId?: string;
   classRoom?: string;
