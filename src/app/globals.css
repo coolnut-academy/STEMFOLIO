@@ -5,7 +5,67 @@
    Indigo · Violet · Deep Space
    ================================================================ */
 
+/* ── Light mode (default when no .dark class) ── */
 :root {
+  /* Background */
+  --background: #f0f2ff;
+  --foreground: #0f1133;
+
+  /* Card / Glass surfaces */
+  --glass-bg:       rgba(255, 255, 255, 0.72);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-border:   rgba(99, 102, 241, 0.18);
+  --glass-shadow:   0 8px 40px rgba(99, 102, 241, 0.10);
+
+  /* Input */
+  --input-bg:     rgba(255, 255, 255, 0.80);
+  --input-border: rgba(99, 102, 241, 0.22);
+
+  /* Accent palette */
+  --primary:      #6366f1;
+  --primary-dark: #4f46e5;
+  --accent:       #8b5cf6;
+  --purple:       #a855f7;
+  --cyan:         #0891b2;
+  --success:      #059669;
+  --warning:      #d97706;
+  --danger:       #dc2626;
+
+  /* Text hierarchy */
+  --text-primary:   #0f1133;
+  --text-secondary: rgba(15, 17, 51, 0.68);
+  --text-muted:     rgba(15, 17, 51, 0.45);
+  --text-faint:     rgba(15, 17, 51, 0.28);
+
+  /* Radius */
+  --radius-card:   16px;
+  --radius-button: 12px;
+  --radius-input:  12px;
+  --radius-pill:   999px;
+
+  /* Glow shadows */
+  --glow-indigo: 0 0 20px rgba(99, 102, 241, 0.18), 0 0 45px rgba(99, 102, 241, 0.07);
+  --glow-violet: 0 0 16px rgba(139, 92, 246, 0.18);
+  --glow-green:  0 0 16px rgba(5, 150, 105, 0.18);
+  --glow-red:    0 0 16px rgba(220, 38, 38, 0.18);
+
+  /* Legacy aliases */
+  --space-blue:    #6366f1;
+  --space-indigo:  #6366f1;
+  --space-violet:  #8b5cf6;
+  --space-teal:    #0891b2;
+  --accent-blue:   #6366f1;
+  --accent-green:  #059669;
+  --accent-red:    #dc2626;
+  --accent-yellow: #d97706;
+  --accent-purple: #a855f7;
+  --accent-orange: #ea580c;
+  --glow-blue:     var(--glow-indigo);
+  --glow-purple:   var(--glow-violet);
+}
+
+/* ── Dark mode — applied when <html class="dark"> ── */
+.dark {
   /* Background */
   --background: #060918;
   --foreground: #eef2ff;
@@ -30,17 +90,11 @@
   --warning:      #f59e0b;
   --danger:       #ef4444;
 
-  /* Text hierarchy — white with opacity */
+  /* Text hierarchy */
   --text-primary:   #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.65);
   --text-muted:     rgba(255, 255, 255, 0.35);
   --text-faint:     rgba(255, 255, 255, 0.22);
-
-  /* Radius */
-  --radius-card:   16px;
-  --radius-button: 12px;
-  --radius-input:  12px;
-  --radius-pill:   999px;
 
   /* Glow shadows */
   --glow-indigo: 0 0 25px rgba(99, 102, 241, 0.35), 0 0 55px rgba(99, 102, 241, 0.12);
@@ -48,7 +102,7 @@
   --glow-green:  0 0 20px rgba(16, 185, 129, 0.32);
   --glow-red:    0 0 20px rgba(239, 68, 68, 0.32);
 
-  /* Legacy aliases — ป้องกัน component เดิม break */
+  /* Legacy aliases */
   --space-blue:    #6366f1;
   --space-indigo:  #6366f1;
   --space-violet:  #8b5cf6;
