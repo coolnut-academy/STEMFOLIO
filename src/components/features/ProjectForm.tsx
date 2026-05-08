@@ -9,7 +9,6 @@ import { TextArea } from '@/components/ui/TextArea';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
 import { createProject, updateProject, archiveProject } from '@/lib/firestore/projects';
-import { generateInviteCode } from '@/lib/firestore/inviteCodes';
 import { getCategories } from '@/lib/firestore/settings';
 import { Project, Advisor, User } from '@/types';
 import { useAdvisors } from '@/hooks/useAdvisors';
@@ -49,7 +48,6 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
   const [selectedStudents, setSelectedStudents] = useState<string[]>(initialData?.studentIds || []);
   
   const [isLoading, setIsLoading] = useState(false);
-  const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [isConfirmArchiveOpen, setIsConfirmArchiveOpen] = useState(false);
 
   useEffect(() => {
@@ -87,23 +85,6 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
     } catch (error) {
       console.error(error);
       showToast('เกิดข้อผิดพลาดในการบันทึก', 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGenerateInvite = async () => {
-    if (!initialData) {
-      showToast('ต้องบันทึกโครงงานก่อนสร้าง Invite Code', 'info');
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const code = await generateInviteCode(initialData.id, user!.uid, 5); // Default max 5
-      setInviteCode(code);
-      showToast('สร้าง Invite Code สำเร็จ', 'success');
-    } catch (error) {
-      showToast('เกิดข้อผิดพลาด', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -251,7 +232,7 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
       </GlassCard>
 
       <GlassCard className="p-6 flex flex-col gap-4">
-        <h2 className="text-xl font-bold border-b border-[var(--glass-border)] pb-2">3. นักเรียน & Invite Code</h2>
+        <h2 className="text-xl font-bold border-b border-[var(--glass-border)] pb-2">3. นักเรียน</h2>
         <div className="flex flex-wrap gap-2 mb-2">
           {selectedStudents.map(id => {
             const std = students.find(s => s.id === id);
@@ -274,24 +255,6 @@ export const ProjectForm = ({ initialData }: ProjectFormProps) => {
           }}
         />
 
-        {initialData && (
-          <div className="mt-4 p-4 border border-indigo-500/20 bg-indigo-500/10 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-white">Invite Code</p>
-                <p className="text-sm text-indigo-300">สร้างรหัสเพื่อให้นักเรียนเข้าร่วมโครงงานด้วยตนเอง</p>
-              </div>
-              {!inviteCode ? (
-                <Button type="button" onClick={handleGenerateInvite} variant="secondary" size="sm" loading={isLoading}>สร้าง Code</Button>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-mono font-bold tracking-widest text-indigo-400">{inviteCode}</span>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => {navigator.clipboard.writeText(inviteCode); showToast('Copied!', 'success');}}><Copy className="w-4 h-4" /></Button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </GlassCard>
 
       <div className="flex items-center justify-between pt-4 border-t border-white/10">

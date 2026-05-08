@@ -72,12 +72,5 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // --- Invite Codes ---
-    match /inviteCodes/{code} {
-      allow read: if request.auth != null;
-      allow create: if isAdmin();
-      allow update: if request.auth != null
-        && resource.data.usedCount < resource.data.maxUses;
-    }
   }
 }

@@ -88,12 +88,3 @@ export interface TimelineEvent {
   deleteRequestReason?: string;
 }
 
-export interface InviteCode {
-  code: string;
-  projectId: string;
-  createdBy: string;
-  createdAt: Timestamp;
-  maxUses: number;                  // ← เพิ่มจาก V3 fix: multi-use code
-  usedCount: number;
-  usedBy: string[];
-}
