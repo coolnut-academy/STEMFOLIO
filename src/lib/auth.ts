@@ -1,14 +1,16 @@
 import {
   signInWithPopup,
   GoogleAuthProvider,
-  signInWithCustomToken,
+  signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   User as FirebaseUser,
 } from 'firebase/auth';
-import { httpsCallable } from 'firebase/functions';
-import { auth, db, functions } from './firebase';
+import { auth, db } from './firebase';
 import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { User } from '@/types';
+
+const STUDENT_EMAIL_DOMAIN = 'stemfolio.com';
+const STUDENT_DEFAULT_PASSWORD = 'Stemfolio2024!';
 
 export const signInWithGoogle = async (): Promise<FirebaseUser> => {
   const provider = new GoogleAuthProvider();
@@ -45,10 +47,9 @@ export const updateProfile = async (uid: string, data: Partial<User>) => {
 };
 
 export const signInWithStudentId = async (studentId: string): Promise<FirebaseUser> => {
-  const loginFn = httpsCallable<{ studentId: string }, { token: string }>(functions, 'loginWithStudentId');
-  const result = await loginFn({ studentId });
-  const credential = await signInWithCustomToken(auth, result.data.token);
-  return credential.user;
+  const email = `${studentId}@${STUDENT_EMAIL_DOMAIN}`;
+  const result = await signInWithEmailAndPassword(auth, email, STUDENT_DEFAULT_PASSWORD);
+  return result.user;
 };
 
 export const signOut = async () => {

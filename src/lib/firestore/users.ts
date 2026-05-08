@@ -1,5 +1,6 @@
-import { db } from '../firebase';
+import { db, functions } from '../firebase';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { httpsCallable } from 'firebase/functions';
 import { User } from '@/types';
 
 export const getUser = async (userId: string): Promise<User | null> => {
@@ -32,26 +33,8 @@ export const searchStudents = async (searchQuery: string): Promise<User[]> => {
 };
 
 export const deleteStudent = async (userId: string): Promise<void> => {
-  const user = await getUser(userId);
-  if (!user) return;
-
-  // Soft delete: Remove from all projects' studentIds
-  // and clear user's projectIds
-  const projectIds = user.projectIds || [];
-  
-  for (const projectId of projectIds) {
-    const projectRef = doc(db, 'projects', projectId);
-    const projectSnap = await getDoc(projectRef);
-    if (projectSnap.exists()) {
-      const projectData = projectSnap.data();
-      const studentIds = projectData.studentIds || [];
-      const updatedStudentIds = studentIds.filter((id: string) => id !== userId);
-      await updateDoc(projectRef, { studentIds: updatedStudentIds });
-    }
-  }
-
-  // Clear projectIds from user
-  await updateUser(userId, { projectIds: [] });
+  const deleteFn = httpsCallable(functions, 'deleteOriginalStudent');
+  await deleteFn({ uid: userId });
 };
 
 export const linkStudentToProject = async (userId: string, projectId: string): Promise<void> => {

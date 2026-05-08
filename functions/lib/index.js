@@ -33,14 +33,17 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginWithStudentId = exports.createOriginalStudent = exports.setAdminRole = void 0;
-const functions = __importStar(require("firebase-functions"));
+exports.deleteOriginalStudent = exports.createOriginalStudent = exports.setAdminRole = void 0;
+const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
-exports.setAdminRole = functions.https.onCall(async (data, context) => {
-    const email = data === null || data === void 0 ? void 0 : data.email;
+const STUDENT_EMAIL_DOMAIN = "stemfolio.com";
+const STUDENT_DEFAULT_PASSWORD = "Stemfolio2024!";
+exports.setAdminRole = (0, https_1.onCall)(async (request) => {
+    var _a;
+    const email = (_a = request.data) === null || _a === void 0 ? void 0 : _a.email;
     if (!email) {
-        throw new functions.https.HttpsError("invalid-argument", "Email is required.");
+        throw new https_1.HttpsError("invalid-argument", "Email is required.");
     }
     try {
         const user = await admin.auth().getUserByEmail(email);
@@ -48,21 +51,21 @@ exports.setAdminRole = functions.https.onCall(async (data, context) => {
         return { message: `Success! ${email} has been made an admin.` };
     }
     catch (error) {
-        throw new functions.https.HttpsError("internal", `Error setting admin role: ${error}`);
+        throw new https_1.HttpsError("internal", `Error setting admin role: ${error}`);
     }
 });
-exports.createOriginalStudent = functions.https.onCall(async (data, context) => {
+exports.createOriginalStudent = (0, https_1.onCall)(async (request) => {
     var _a;
-    if (!context.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "Must be authenticated.");
+    if (!request.auth) {
+        throw new https_1.HttpsError("unauthenticated", "Must be authenticated.");
     }
-    const callerDoc = await admin.firestore().collection("users").doc(context.auth.uid).get();
+    const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
     if (!callerDoc.exists || ((_a = callerDoc.data()) === null || _a === void 0 ? void 0 : _a.role) !== "admin") {
-        throw new functions.https.HttpsError("permission-denied", "Must be admin.");
+        throw new https_1.HttpsError("permission-denied", "Must be admin.");
     }
-    const { name, surname, studentId, classRoom, email } = data;
+    const { name, surname, studentId, classRoom } = request.data;
     if (!name || !surname || !studentId) {
-        throw new functions.https.HttpsError("invalid-argument", "name, surname, and studentId are required.");
+        throw new https_1.HttpsError("invalid-argument", "name, surname, and studentId are required.");
     }
     // Check for duplicate studentId among original-mode users
     const existing = await admin.firestore()
@@ -71,14 +74,18 @@ exports.createOriginalStudent = functions.https.onCall(async (data, context) => 
         .get();
     const duplicate = existing.docs.find(d => d.data().loginType === "original");
     if (duplicate) {
-        throw new functions.https.HttpsError("already-exists", "Student ID already exists.");
+        throw new https_1.HttpsError("already-exists", "Student ID already exists.");
     }
-    // Create Firebase Auth user (no email/password — login is via custom token only)
-    const authUser = await admin.auth().createUser(Object.assign({ displayName: `${name} ${surname}` }, (email ? { email } : {})));
+    const loginEmail = `${studentId}@${STUDENT_EMAIL_DOMAIN}`;
+    const authUser = await admin.auth().createUser({
+        email: loginEmail,
+        password: STUDENT_DEFAULT_PASSWORD,
+        displayName: `${name} ${surname}`,
+    });
     const now = admin.firestore.FieldValue.serverTimestamp();
     await admin.firestore().collection("users").doc(authUser.uid).set({
         id: authUser.uid,
-        email: email || "",
+        email: loginEmail,
         name: `${name} ${surname}`,
         surname,
         studentId,
@@ -93,20 +100,39 @@ exports.createOriginalStudent = functions.https.onCall(async (data, context) => 
     });
     return { uid: authUser.uid };
 });
-exports.loginWithStudentId = functions.https.onCall(async (data, context) => {
-    const { studentId } = data;
-    if (!studentId) {
-        throw new functions.https.HttpsError("invalid-argument", "studentId is required.");
+exports.deleteOriginalStudent = (0, https_1.onCall)(async (request) => {
+    var _a, _b, _c;
+    if (!request.auth) {
+        throw new https_1.HttpsError("unauthenticated", "Must be authenticated.");
     }
-    const snapshot = await admin.firestore()
-        .collection("users")
-        .where("studentId", "==", studentId)
-        .get();
-    const studentDoc = snapshot.docs.find(d => d.data().loginType === "original");
-    if (!studentDoc) {
-        throw new functions.https.HttpsError("not-found", "Student ID not found.");
+    const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
+    if (!callerDoc.exists || ((_a = callerDoc.data()) === null || _a === void 0 ? void 0 : _a.role) !== "admin") {
+        throw new https_1.HttpsError("permission-denied", "Must be admin.");
     }
-    const token = await admin.auth().createCustomToken(studentDoc.id);
-    return { token };
+    const { uid } = request.data;
+    if (!uid) {
+        throw new https_1.HttpsError("invalid-argument", "uid is required.");
+    }
+    const userDoc = await admin.firestore().collection("users").doc(uid).get();
+    if (userDoc.exists) {
+        const projectIds = ((_b = userDoc.data()) === null || _b === void 0 ? void 0 : _b.projectIds) || [];
+        for (const projectId of projectIds) {
+            const projectRef = admin.firestore().collection("projects").doc(projectId);
+            const projectSnap = await projectRef.get();
+            if (projectSnap.exists) {
+                const studentIds = ((_c = projectSnap.data()) === null || _c === void 0 ? void 0 : _c.studentIds) || [];
+                await projectRef.update({ studentIds: studentIds.filter((id) => id !== uid) });
+            }
+        }
+        await admin.firestore().collection("users").doc(uid).delete();
+    }
+    try {
+        await admin.auth().deleteUser(uid);
+    }
+    catch (e) {
+        if ((e === null || e === void 0 ? void 0 : e.code) !== "auth/user-not-found")
+            throw e;
+    }
+    return { success: true };
 });
 //# sourceMappingURL=index.js.map

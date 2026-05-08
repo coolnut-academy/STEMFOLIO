@@ -300,7 +300,7 @@ export default function StudentsPage() {
       <ConfirmDialog
         isOpen={isConfirmOpen}
         title="ยืนยันการลบนักเรียน"
-        message="การลบนักเรียนจะนำนักเรียนออกจากโครงงานทั้งหมด แต่จะไม่ลบบัญชีผู้ใช้ (Soft Delete) ยืนยันหรือไม่?"
+        message="การลบนักเรียนจะลบข้อมูลและบัญชีผู้ใช้ออกจากระบบถาวร รวมถึงนำออกจากโครงงานทั้งหมด ยืนยันหรือไม่?"
         isDanger={true}
         confirmText="ลบนักเรียน"
         onConfirm={handleDelete}
