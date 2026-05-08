@@ -6,7 +6,7 @@ admin.initializeApp();
 const STUDENT_EMAIL_DOMAIN = "stemfolio.com";
 const STUDENT_DEFAULT_PASSWORD = "Stemfolio2024!";
 
-export const setAdminRole = onCall(async (request) => {
+export const setAdminRole = onCall({ cors: true }, async (request) => {
   const email = request.data?.email;
   if (!email) {
     throw new HttpsError("invalid-argument", "Email is required.");
@@ -21,7 +21,7 @@ export const setAdminRole = onCall(async (request) => {
   }
 });
 
-export const createOriginalStudent = onCall(async (request) => {
+export const createOriginalStudent = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be authenticated.");
   }
@@ -75,7 +75,7 @@ export const createOriginalStudent = onCall(async (request) => {
   return { uid: authUser.uid };
 });
 
-export const deleteOriginalStudent = onCall(async (request) => {
+export const deleteOriginalStudent = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be authenticated.");
   }

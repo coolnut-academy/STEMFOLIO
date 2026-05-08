@@ -39,7 +39,7 @@ const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
 const STUDENT_EMAIL_DOMAIN = "stemfolio.com";
 const STUDENT_DEFAULT_PASSWORD = "Stemfolio2024!";
-exports.setAdminRole = (0, https_1.onCall)(async (request) => {
+exports.setAdminRole = (0, https_1.onCall)({ cors: true }, async (request) => {
     var _a;
     const email = (_a = request.data) === null || _a === void 0 ? void 0 : _a.email;
     if (!email) {
@@ -54,7 +54,7 @@ exports.setAdminRole = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("internal", `Error setting admin role: ${error}`);
     }
 });
-exports.createOriginalStudent = (0, https_1.onCall)(async (request) => {
+exports.createOriginalStudent = (0, https_1.onCall)({ cors: true }, async (request) => {
     var _a;
     if (!request.auth) {
         throw new https_1.HttpsError("unauthenticated", "Must be authenticated.");
@@ -100,7 +100,7 @@ exports.createOriginalStudent = (0, https_1.onCall)(async (request) => {
     });
     return { uid: authUser.uid };
 });
-exports.deleteOriginalStudent = (0, https_1.onCall)(async (request) => {
+exports.deleteOriginalStudent = (0, https_1.onCall)({ cors: true }, async (request) => {
     var _a, _b, _c;
     if (!request.auth) {
         throw new https_1.HttpsError("unauthenticated", "Must be authenticated.");
