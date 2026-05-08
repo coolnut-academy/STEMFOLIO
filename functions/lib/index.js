@@ -37,9 +37,8 @@ exports.loginWithStudentId = exports.createOriginalStudent = exports.setAdminRol
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
-exports.setAdminRole = functions.https.onCall(async (request) => {
-    var _a;
-    const email = ((_a = request.data) === null || _a === void 0 ? void 0 : _a.email) || request.email;
+exports.setAdminRole = functions.https.onCall(async (data, context) => {
+    const email = data === null || data === void 0 ? void 0 : data.email;
     if (!email) {
         throw new functions.https.HttpsError("invalid-argument", "Email is required.");
     }
@@ -52,16 +51,16 @@ exports.setAdminRole = functions.https.onCall(async (request) => {
         throw new functions.https.HttpsError("internal", `Error setting admin role: ${error}`);
     }
 });
-exports.createOriginalStudent = functions.https.onCall(async (request) => {
+exports.createOriginalStudent = functions.https.onCall(async (data, context) => {
     var _a;
-    if (!request.auth) {
+    if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "Must be authenticated.");
     }
-    const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
+    const callerDoc = await admin.firestore().collection("users").doc(context.auth.uid).get();
     if (!callerDoc.exists || ((_a = callerDoc.data()) === null || _a === void 0 ? void 0 : _a.role) !== "admin") {
         throw new functions.https.HttpsError("permission-denied", "Must be admin.");
     }
-    const { name, surname, studentId, classRoom, email } = request.data;
+    const { name, surname, studentId, classRoom, email } = data;
     if (!name || !surname || !studentId) {
         throw new functions.https.HttpsError("invalid-argument", "name, surname, and studentId are required.");
     }
@@ -94,8 +93,8 @@ exports.createOriginalStudent = functions.https.onCall(async (request) => {
     });
     return { uid: authUser.uid };
 });
-exports.loginWithStudentId = functions.https.onCall(async (request) => {
-    const { studentId } = request.data;
+exports.loginWithStudentId = functions.https.onCall(async (data, context) => {
+    const { studentId } = data;
     if (!studentId) {
         throw new functions.https.HttpsError("invalid-argument", "studentId is required.");
     }

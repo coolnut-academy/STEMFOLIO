@@ -3,8 +3,8 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-export const setAdminRole = functions.https.onCall(async (request: any) => {
-  const email = request.data?.email || request.email;
+export const setAdminRole = functions.https.onCall(async (data: any, context: any) => {
+  const email = data?.email;
   if (!email) {
     throw new functions.https.HttpsError("invalid-argument", "Email is required.");
   }
@@ -18,17 +18,17 @@ export const setAdminRole = functions.https.onCall(async (request: any) => {
   }
 });
 
-export const createOriginalStudent = functions.https.onCall(async (request: any) => {
-  if (!request.auth) {
+export const createOriginalStudent = functions.https.onCall(async (data: any, context: any) => {
+  if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "Must be authenticated.");
   }
 
-  const callerDoc = await admin.firestore().collection("users").doc(request.auth.uid).get();
+  const callerDoc = await admin.firestore().collection("users").doc(context.auth.uid).get();
   if (!callerDoc.exists || callerDoc.data()?.role !== "admin") {
     throw new functions.https.HttpsError("permission-denied", "Must be admin.");
   }
 
-  const { name, surname, studentId, classRoom, email } = request.data;
+  const { name, surname, studentId, classRoom, email } = data;
   if (!name || !surname || !studentId) {
     throw new functions.https.HttpsError("invalid-argument", "name, surname, and studentId are required.");
   }
@@ -70,8 +70,8 @@ export const createOriginalStudent = functions.https.onCall(async (request: any)
   return { uid: authUser.uid };
 });
 
-export const loginWithStudentId = functions.https.onCall(async (request: any) => {
-  const { studentId } = request.data;
+export const loginWithStudentId = functions.https.onCall(async (data: any, context: any) => {
+  const { studentId } = data;
   if (!studentId) {
     throw new functions.https.HttpsError("invalid-argument", "studentId is required.");
   }
